@@ -32,3 +32,19 @@
     * (schedule)
 * backend
     * video call (agora, twilio)
+
+
+## Contract Notes
+
+### User Account
+May need to have separate accounts for teacher & students anyway
+-  1 byte type (user, teacher, ?)
+- 64 byte profile name
+-    byte contact info
+
+
+### Offer for a Lesson
+-  8 byte DATE
+-  4 byte SUBJECT ID (good for statistics, what was taught)
+-  1 byte REPEAT (Daily, Weekly, Monthly, ?)
+- 64 byte RATE in LAMPORT / HOUR
