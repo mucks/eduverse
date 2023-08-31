@@ -36,15 +36,42 @@
 
 ## Contract Notes
 
+### Conf Account
+- 4 byte num of Teachers
+- 4 byte num of Users
+
 ### User Account
-May need to have separate accounts for teacher & students anyway
--  1 byte type (user, teacher, ?)
+"eduverse_user":num
+- ?
+
+### Teacher Account
+"eduverse_teacher":num
 - 64 byte profile name
 -    byte contact info
+-  2 byte review count - 65k enough?
+-  4 byte teach offers?
 
+### Teacher Treasury Account
+"eduverse_teacher_treasury":num
 
-### Offer for a Lesson
--  8 byte DATE
+### Offer for a Lesson Account
+TID:num
+-  8 byte DATETIME
 -  4 byte SUBJECT ID (good for statistics, what was taught)
 -  1 byte REPEAT (Daily, Weekly, Monthly, ?)
-- 64 byte RATE in LAMPORT / HOUR
+-  8 byte RATE in LAMPORT / HOUR or PRICE for length of lesson?
+-  2 byte length of lesson ?
+-  8 byte amount of funds deposited
+-  ? byte Cancel details
+- 32 byte **student**/teacher based on index
+
+
+### Teacher Review Account
+TID:num
+- 1 byte 0/5 stars
+- ? byte review text
+- ? byte DATE ?
+
+### User Review of Teacher Account
+UID:TID
+- 2 byte num?
