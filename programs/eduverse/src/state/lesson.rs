@@ -22,18 +22,15 @@ pub struct Lesson {
     pub repeat: u8, //TODO logic with payment etc.
 
     /// Up till when can this lesson be cancelled?
-    pub cancel: u8, //TODO may need a deposit deadline, cancel details, refunds? ..
+    pub cancel: u8, //TODO may need a deposit deadline, cancel details, refunds? .. or just request to cancel + refund
 
     /// Who is the student
     pub student: u32, //TODO profile u32 or pubkey? (depends on whether students should havea profile or not)
 
     /// What is the subject being taught
     pub subject: u32, //TODO make this an enum or leave it as a number for the frontend
-
-    /// Contact website
-    pub website: String,
 }
 
 impl Lesson {
-    pub const LEN: usize = std::mem::size_of::<Lesson>() + 600; //TODO
+    pub const LEN: usize = std::mem::size_of::<Lesson>();
 }

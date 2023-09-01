@@ -14,7 +14,7 @@ pub mod eduverse {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        Ok(())
+        initialize::handler(ctx)
     }
 
     /// Create a new teacher profile
@@ -22,10 +22,9 @@ pub mod eduverse {
         ctx: Context<CreateTeacher>,
         title: String,
         website: String,
+        telegram: String,
+        twitter: String,
     ) -> Result<()> {
-        create_teacher::handler(ctx, title, website)
+        create_teacher::handler(ctx, title, website, telegram, twitter)
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}

@@ -6,8 +6,17 @@ pub struct Teacher {
     /// Version
     pub version: u8,
 
+    /// Profile number
+    pub profile_id: u32,
+
     /// Profile name
     pub title: String,
+
+    /// General availability
+    pub availability: u8, //TODO
+
+    /// Time zone
+    pub timezone: u8,
 
     /// Contact website
     pub website: String,
@@ -23,6 +32,9 @@ pub struct Teacher {
 
     /// Total stars received (For caching - fast display of overall rating)
     pub count_stars: u32,
+
+    /// The number of lessons the teacher created
+    pub count_lessons: u32,
 }
 
 impl Teacher {

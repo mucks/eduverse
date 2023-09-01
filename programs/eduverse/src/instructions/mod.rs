@@ -1,5 +1,21 @@
 pub mod create_lesson;
+pub mod create_review;
+pub mod create_student;
 pub mod create_teacher;
+pub mod deposit;
+pub mod initialize;
+pub mod lesson_begin;
+pub mod lesson_end;
+pub mod register_subject;
+pub mod withdraw;
 
 pub use create_lesson::*;
+pub use create_review::*;
+pub use create_student::*;
 pub use create_teacher::*;
+pub use deposit::*;
+pub use initialize::*;
+pub use lesson_begin::*;
+pub use lesson_end::*;
+pub use register_subject::*;
+pub use withdraw::*;

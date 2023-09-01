@@ -7,7 +7,7 @@ pub struct Review {
     pub version: u8,
 
     /// How many stars were given
-    pub rating: u8,
+    pub stars: u8,
 
     /// Date of review TODO fairly optional account creation date is there as well
     pub created_at: u64,

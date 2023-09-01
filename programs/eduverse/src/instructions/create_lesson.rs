@@ -1,18 +1,18 @@
+use crate::state::Lesson;
 use anchor_lang::prelude::*;
 
 use crate::state::review::Review;
 
 #[event]
-pub struct ReviewCreated {
+pub struct LessonCreated {
     teacher: Pubkey,
-    rating: u8,
 }
 
 #[derive(Accounts)]
 #[instruction(
-rating: u8,
+student: u8,
 )]
-pub struct CreateReview<'info> {
+pub struct CreateLesson<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -21,28 +21,29 @@ pub struct CreateReview<'info> {
     seeds = [b"eduverse_lesson", payer.key().as_ref()],
     bump,
     payer = payer,
-    space = Review::LEN
+    space = Lesson::LEN
     )]
-    pub review: Box<Account<'info, Review>>,
+    pub lesson: Box<Account<'info, Lesson>>,
 
     pub rent: Sysvar<'info, Rent>,
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<CreateReview>, rating: u8) -> Result<()> {
+pub fn handler(ctx: Context<CreateLesson>, rating: u8) -> Result<()> {
     // Store data
-    let review = &mut ctx.accounts.review;
-    review.rating = rating;
+    let lesson = &mut ctx.accounts.lesson;
+    lesson.timestamp = 0;
+    lesson.duration = 0;
+    lesson.fee_total = 0;
+    lesson.fee_deposited = 0;
+    lesson.repeat = 0;
+    lesson.cancel = 0;
+    lesson.student = 0;
+    lesson.subject = 0;
 
-    //Todo figure out how many lessons reviewer had?
-    //  probably in front-end
-    //   teacher _ lessun_num _ iterate, check student
-    //   or statistics accounts teacher : student -> stats (total time learned, number of lessons, ...?)
-
-    emit!(ReviewCreated {
+    emit!(LessonCreated {
         teacher: ctx.accounts.payer.key(),
-        rating
     });
 
     Ok(())
