@@ -10,9 +10,9 @@ pub struct Config {
     pub count_teachers: u32,
 
     /// The number of student profiles
-    pub count_students: u32, //TODO unclear if needed
+    pub count_students: u32,
 }
 
 impl Config {
-    pub const LEN: usize = std::mem::size_of::<Config>();
+    pub const LEN: usize = std::mem::size_of::<Config>() + 200;
 }

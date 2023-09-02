@@ -5,7 +5,7 @@ use crate::state::lesson::Lesson;
 use crate::state::{Review, Teacher};
 
 #[event]
-pub struct ReviewCreated {
+pub struct TeacherReviewCreated {
     account: Pubkey,
     teacher: Pubkey,
     stars: u8,
@@ -16,7 +16,7 @@ pub struct ReviewCreated {
 stars: u8,
 text: String,
 )]
-pub struct CreateLesson<'info> {
+pub struct CreateReviewTeacher<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -40,7 +40,7 @@ pub struct CreateLesson<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<CreateLesson>, stars: u8, text: String) -> Result<()> {
+pub fn handler(ctx: Context<CreateReviewTeacher>, stars: u8, text: String) -> Result<()> {
     //TODO make sure the lesson took place etc.
 
     //Todo figure out how many lessons reviewer had?
@@ -67,7 +67,7 @@ pub fn handler(ctx: Context<CreateLesson>, stars: u8, text: String) -> Result<()
         .checked_add(stars as u32)
         .ok_or(errors::ErrorCode::OverflowError)?;
 
-    emit!(ReviewCreated {
+    emit!(TeacherReviewCreated {
         account: ctx.accounts.review.key(),
         teacher: ctx.accounts.teacher.key(),
         stars

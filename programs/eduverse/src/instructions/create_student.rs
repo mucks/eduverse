@@ -1,8 +1,6 @@
 use crate::errors;
-use crate::state::Config;
+use crate::state::{Config, ProfileById, Student};
 use anchor_lang::prelude::*;
-
-use crate::state::student::Student;
 
 #[event]
 pub struct StudentCreated {
@@ -32,7 +30,16 @@ pub struct CreateStudent<'info> {
     payer = payer,
     space = Student::LEN
     )]
-    pub student: Box<Account<'info, Student>>,
+    pub student_profile: Box<Account<'info, Student>>,
+
+    #[account(
+    init,
+    seeds = ["student_by_id".as_bytes(), &config.count_teachers.to_le_bytes()],
+    bump,
+    payer = payer,
+    space = ProfileById::LEN
+    )]
+    pub student_by_id: Box<Account<'info, ProfileById>>,
 
     pub rent: Sysvar<'info, Rent>,
 
@@ -43,10 +50,14 @@ pub fn handler(ctx: Context<CreateStudent>, title: String, contact_info: String)
     let config = &mut ctx.accounts.config;
 
     // Store data of student
-    let student = &mut ctx.accounts.student;
+    let student = &mut ctx.accounts.student_profile;
     student.profile_id = config.count_students;
     student.title = title;
     student.contact_info = contact_info;
+
+    // Store student profile_id to pubkey lookup
+    let student_by_id = &mut ctx.accounts.student_by_id;
+    student_by_id.profile_key = student.key();
 
     // Increase number of student profiles
     config.count_students = config

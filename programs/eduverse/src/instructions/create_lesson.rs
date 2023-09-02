@@ -1,4 +1,5 @@
-use crate::state::Lesson;
+use crate::errors;
+use crate::state::{Lesson, Teacher};
 use anchor_lang::prelude::*;
 
 use crate::state::review::Review;
@@ -6,19 +7,31 @@ use crate::state::review::Review;
 #[event]
 pub struct LessonCreated {
     teacher: Pubkey,
+    subject: u32,
+    student: u32,
 }
 
 #[derive(Accounts)]
 #[instruction(
-student: u8,
+student: u32,
+subject: u32,
+fee: u64,
+duration: u16,
+date_time: u64,
 )]
 pub struct CreateLesson<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
     #[account(
+    seeds = ["teacher".as_bytes(), payer.key().as_ref()],
+    bump
+    )]
+    pub teacher_profile: Box<Account<'info, Teacher>>,
+
+    #[account(
     init,
-    seeds = [b"eduverse_lesson", payer.key().as_ref()],
+    seeds = ["lesson".as_bytes(), teacher_profile.key().as_ref(), &teacher_profile.count_lessons.to_le_bytes()],
     bump,
     payer = payer,
     space = Lesson::LEN
@@ -30,20 +43,36 @@ pub struct CreateLesson<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<CreateLesson>, rating: u8) -> Result<()> {
+pub fn handler(
+    ctx: Context<CreateLesson>,
+    student: u32,
+    subject: u32,
+    fee: u64,
+    duration: u16,
+    date_time: u64,
+) -> Result<()> {
     // Store data
     let lesson = &mut ctx.accounts.lesson;
-    lesson.timestamp = 0;
-    lesson.duration = 0;
-    lesson.fee_total = 0;
+    lesson.timestamp = date_time;
+    lesson.duration = duration;
+    lesson.fee_total = fee;
     lesson.fee_deposited = 0;
     lesson.repeat = 0;
     lesson.cancel = 0;
-    lesson.student = 0;
-    lesson.subject = 0;
+    lesson.student = student;
+    lesson.subject = subject;
+
+    // Increase total number of lessons created by teacher
+    let teacher = &mut ctx.accounts.teacher_profile;
+    teacher.count_lessons = teacher
+        .count_lessons
+        .checked_add(1)
+        .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(LessonCreated {
         teacher: ctx.accounts.payer.key(),
+        subject,
+        student
     });
 
     Ok(())

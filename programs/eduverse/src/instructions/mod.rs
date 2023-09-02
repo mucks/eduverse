@@ -1,5 +1,5 @@
 pub mod create_lesson;
-pub mod create_review;
+pub mod create_review_teacher;
 pub mod create_student;
 pub mod create_teacher;
 pub mod deposit;
@@ -10,7 +10,7 @@ pub mod register_subject;
 pub mod withdraw;
 
 pub use create_lesson::*;
-pub use create_review::*;
+pub use create_review_teacher::*;
 pub use create_student::*;
 pub use create_teacher::*;
 pub use deposit::*;
