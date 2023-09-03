@@ -60,7 +60,7 @@ pub fn handler(
     lesson.repeat = 0;
     lesson.cancel = 0;
     lesson.student = student;
-    lesson.subject = subject;
+    lesson.subject_id = subject;
 
     // Increase total number of lessons created by teacher
     let teacher = &mut ctx.accounts.teacher_profile;

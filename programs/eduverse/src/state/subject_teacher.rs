@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 #[derive(Default)]
 pub struct SubjectTeacher {
     /// The profile number of the teacher
-    pub teacher_profile: u32,
+    pub teacher_profile_id: u32,
     //TODO statistics? total lessons taught?, ...
 }
 

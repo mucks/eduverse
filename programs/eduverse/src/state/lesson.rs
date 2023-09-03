@@ -28,7 +28,7 @@ pub struct Lesson {
     pub student: u32, //TODO profile u32 or pubkey? (depends on whether students should havea profile or not)
 
     /// What is the subject being taught
-    pub subject: u32, //TODO make this an enum or leave it as a number for the frontend
+    pub subject_id: u32, //TODO make this an enum or leave it as a number for the frontend
 }
 
 impl Lesson {
