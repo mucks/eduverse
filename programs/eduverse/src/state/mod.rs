@@ -7,6 +7,7 @@ pub mod subject_config;
 pub mod subject_teacher;
 pub mod teacher;
 pub mod review_by_id;
+pub mod teacher_subject;
 
 pub use config::*;
 pub use lesson::*;
@@ -17,3 +18,4 @@ pub use subject_config::*;
 pub use subject_teacher::*;
 pub use teacher::*;
 pub use review_by_id::*;
+pub use teacher_subject::*;

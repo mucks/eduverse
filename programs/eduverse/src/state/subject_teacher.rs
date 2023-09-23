@@ -5,7 +5,7 @@ use anchor_lang::prelude::*;
 pub struct SubjectTeacher {
     /// The profile number of the teacher
     pub teacher_profile_id: u32,
-    //TODO statistics? total lessons taught?, ...
+    //TODO statistics? total number of lessons taught?, ...
 }
 
 impl SubjectTeacher {

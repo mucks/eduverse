@@ -34,7 +34,7 @@ pub struct CreateStudent<'info> {
 
     #[account(
     init,
-    seeds = ["student_by_id".as_bytes(), &config.count_teachers.to_le_bytes()],
+    seeds = ["student_by_id".as_bytes(), &config.count_students.to_le_bytes()],
     bump,
     payer = payer,
     space = ProfileById::LEN

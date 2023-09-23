@@ -35,6 +35,10 @@ pub struct Teacher {
 
     /// The number of lessons the teacher created
     pub count_lessons: u32,
+
+    /// The number of subjects the teacher is teaching
+    pub count_subjects: u32,
+
 }
 
 impl Teacher {

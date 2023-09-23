@@ -14,5 +14,5 @@ pub struct Config {
 }
 
 impl Config {
-    pub const LEN: usize = std::mem::size_of::<Config>() + 200;
+    pub const LEN: usize = std::mem::size_of::<Config>() + 600;
 }
