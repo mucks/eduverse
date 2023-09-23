@@ -2,8 +2,6 @@ use crate::errors;
 use crate::state::{Lesson, Teacher};
 use anchor_lang::prelude::*;
 
-use crate::state::review::Review;
-
 #[event]
 pub struct LessonCreated {
     teacher: Pubkey,
