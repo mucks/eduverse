@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
 use crate::errors;
-use crate::state::{Teacher, SubjectTeacher, SubjectConfig, TeacherSubject};
+use crate::state::{SubjectConfig, SubjectTeacher, Teacher};
+use anchor_lang::prelude::*;
 
 #[event]
 pub struct SubjectRegistered {
@@ -41,15 +41,6 @@ pub struct RegisterSubject<'info> {
     )]
     pub subject_teacher: Box<Account<'info, SubjectTeacher>>,
 
-    #[account(
-    init,
-    seeds = ["teacher_subject".as_bytes(), &teacher_profile.key().as_ref(), &teacher_profile.count_subjects.to_le_bytes()],
-    bump,
-    payer = payer,
-    space = TeacherSubject::LEN
-    )]
-    pub teacher_subject: Box<Account<'info, TeacherSubject>>,
-
     pub rent: Sysvar<'info, Rent>,
 
     pub system_program: Program<'info, System>,
@@ -57,6 +48,11 @@ pub struct RegisterSubject<'info> {
 
 pub fn handler(ctx: Context<RegisterSubject>, subject_id: u32) -> Result<()> {
     let teacher_profile = &mut ctx.accounts.teacher_profile;
+
+    // Add this subject to subjects taught by this teacher
+    if !teacher_profile.add_subject(subject_id) {
+        return Err(errors::ErrorCode::OverflowError.into());
+    }
 
     // Store the teachers profile_id in the subject to teacher lookup account
     let subject_teacher = &mut ctx.accounts.subject_teacher;
@@ -68,20 +64,6 @@ pub fn handler(ctx: Context<RegisterSubject>, subject_id: u32) -> Result<()> {
         .count_teachers
         .checked_add(1)
         .ok_or(errors::ErrorCode::OverflowError)?;
-
-    // Store the subject in the teacher to subject lookup account
-    let teacher_subject = &mut ctx.accounts.teacher_subject;
-    teacher_subject.subject_id = subject_id;
-
-    // Increase the number of subjects taught by this teacher
-    teacher_profile.count_subjects = teacher_profile
-        .count_subjects
-        .checked_add(1)
-        .ok_or(errors::ErrorCode::OverflowError)?;
-
-    // TODO there is no safeguard against teachers registering the same subject many times (except them wasting money on rent)
-    // another account? teacher_profile.key() : subject_id
-    // frontend could do a soft check, can also add fees :) might be good for a marketing budget
 
     emit!(SubjectRegistered {
         teacher_profile: teacher_profile.profile_id,

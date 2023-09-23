@@ -32,5 +32,5 @@ pub struct Lesson {
 }
 
 impl Lesson {
-    pub const LEN: usize = std::mem::size_of::<Lesson>() + 400;// likely needs future edits
+    pub const LEN: usize = std::mem::size_of::<Lesson>() + 400; // likely needs future edits
 }

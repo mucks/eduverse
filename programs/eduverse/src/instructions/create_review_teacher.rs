@@ -54,7 +54,6 @@ pub struct CreateReviewTeacher<'info> {
 
     //TODO need a blocker account for teacher_profile.key + student_profile.key so as to only have one review per user
     // or do lookup accounts teacher_profile.key : num -> review_acc.key or student_profile_id ("review" _ teacher.key _ student.key)
-
     pub rent: Sysvar<'info, Rent>,
 
     pub system_program: Program<'info, System>,

@@ -36,11 +36,23 @@ pub struct Teacher {
     /// The number of lessons the teacher created
     pub count_lessons: u32,
 
-    /// The number of subjects the teacher is teaching
-    pub count_subjects: u32,
-
+    /// Subjects this teacher has registered
+    pub subjects_registered: [u32; 25],
 }
 
 impl Teacher {
     pub const LEN: usize = std::mem::size_of::<Teacher>() + 600; //TODO
+
+    pub fn add_subject(&mut self, subject_id: u32) -> bool {
+        for itm in &mut self.subjects_registered {
+            // Not a guarantee that the subject does not appear after some "hole" (created after removing another subject)
+            if *itm == subject_id {
+                return false;
+            } else if *itm == 0 {
+                *itm = subject_id;
+                return true;
+            }
+        }
+        false
+    }
 }
