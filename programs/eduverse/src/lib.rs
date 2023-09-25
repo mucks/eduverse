@@ -45,16 +45,42 @@ pub mod eduverse {
 
     /// Either teacher or student can create a lesson
     ///TODO since this will be limited a DoS becomes possible, therefore fees must be paid that teacher can collect - so DoS makes teacher rich without doing anything
-    pub fn create_lesson(
+    pub fn lesson_create(
         ctx: Context<LessonCreate>,
+        teacher_id: u32,
         student_id: u32,
         subject_id: u32,
     ) -> Result<()> {
-        lesson_create::handler(ctx, student_id, subject_id, 0, 0, 0)
+        lesson_create::handler(ctx, teacher_id, student_id, subject_id, 0, 0, 0)
+    }
+
+    /// Starts the lesson
+    pub fn lesson_begin(
+        ctx: Context<LessonBegin>,
+        teacher_id: u32,
+        lesson_id: u32,
+        student_id: u32,
+    ) -> Result<()> {
+        lesson_begin::handler(ctx, teacher_id, lesson_id, student_id)
+    }
+
+    /// Ends the lesson
+    pub fn lesson_end(
+        ctx: Context<LessonEnd>,
+        teacher_id: u32,
+        lesson_id: u32,
+        student_id: u32,
+    ) -> Result<()> {
+        lesson_end::handler(ctx, teacher_id, lesson_id, student_id)
     }
 
     /// The student can deposit funds to a lesson approved by the teacher
-    pub fn deposit_lesson_funds(ctx: Context<Deposit>, todo: u32, lesson_todo: u32) -> Result<()> {
+    pub fn lesson_deposit(ctx: Context<Deposit>, todo: u32, lesson_todo: u32) -> Result<()> {
         deposit::handler(ctx, todo, lesson_todo)
+    }
+
+    /// A teacher can withdraw their accumulated funds
+    pub fn teacher_withdraw_funds(ctx: Context<Withdraw>, todo: u32, amount: u64) -> Result<()> {
+        withdraw::handler(ctx, todo, amount)
     }
 }

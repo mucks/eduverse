@@ -51,7 +51,7 @@ pub fn handler(ctx: Context<RegisterSubject>, subject_id: u32) -> Result<()> {
 
     // Add this subject to subjects taught by this teacher
     if !teacher_profile.add_subject(subject_id) {
-        return Err(errors::ErrorCode::OverflowError.into());
+        return Err(errors::ErrorCode::SubjectLimitReached.into());
     }
 
     // Store the teachers profile_id in the subject to teacher lookup account

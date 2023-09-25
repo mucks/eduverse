@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 
 #[event]
 pub struct TeacherCreated {
-    teacher: Pubkey,
+    account_key_teacher: Pubkey,
 }
 
 #[derive(Accounts)]
@@ -58,21 +58,22 @@ pub fn handler(
     let config = &mut ctx.accounts.config;
 
     // Store data of teacher
-    let teacher = &mut ctx.accounts.teacher_profile;
-    teacher.profile_id = config.count_teachers;
-    teacher.title = title;
-    teacher.availability = 0; //TODO
-    teacher.timezone = 0; //TODO
-    teacher.website = website;
-    teacher.telegram = telegram;
-    teacher.twitter = twitter;
-    teacher.count_reviews = 0;
-    teacher.count_stars = 0;
-    teacher.count_lessons = 0;
+    let teacher_profile = &mut ctx.accounts.teacher_profile;
+    teacher_profile.profile_id = config.count_teachers;
+    teacher_profile.title = title;
+    teacher_profile.availability = 0; //TODO
+    teacher_profile.timezone = 0; //TODO
+    teacher_profile.website = website;
+    teacher_profile.telegram = telegram;
+    teacher_profile.twitter = twitter;
+    teacher_profile.count_reviews = 0;
+    teacher_profile.count_stars = 0;
+    // Lesson 0 won't be a valid id, since lesson references are stored in an array where 0 means empty
+    teacher_profile.count_lessons = 1;
 
     // Store teacher profile_id to pubkey lookup
     let teacher_by_id = &mut ctx.accounts.teacher_by_id;
-    teacher_by_id.profile_key = teacher.key();
+    teacher_by_id.profile_key = teacher_profile.key();
 
     // Increase number of teacher profiles
     config.count_teachers = config
@@ -81,7 +82,7 @@ pub fn handler(
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(TeacherCreated {
-        teacher: teacher.key(),
+        account_key_teacher: teacher_profile.key(),
     });
 
     Ok(())

@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 
 #[event]
 pub struct StudentCreated {
-    student: Pubkey,
+    account_key_student: Pubkey,
 }
 
 #[derive(Accounts)]
@@ -66,7 +66,7 @@ pub fn handler(ctx: Context<CreateStudent>, title: String, contact_info: String)
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(StudentCreated {
-        student: student.key(),
+        account_key_student: student.key(),
     });
 
     Ok(())

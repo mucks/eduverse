@@ -1,28 +1,37 @@
 use crate::errors;
-use crate::state::{Lesson, Teacher};
+use crate::state::{Lesson, ProfileById, Teacher};
 use anchor_lang::prelude::*;
 
 #[event]
 pub struct LessonCreated {
-    teacher: Pubkey,
-    subject: u32,
-    student: u32,
+    teacher_id: u32,
+    student_id: u32,
+    lesson_id: u32,
+    subject_id: u32,
 }
 
 #[derive(Accounts)]
 #[instruction(
-student: u32,
-subject: u32,
+teacher_id: u32,
+student_id: u32,
+subject_id: u32,
 fee: u64,
 duration: u16,
 date_time: u64,
 )]
 pub struct LessonCreate<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>,
+    pub payer: Signer<'info>,//TODO either teacher or student; dont have the teacher key; does it matter if creator pays for it
 
     #[account(
-    seeds = ["teacher".as_bytes(), payer.key().as_ref()],
+    seeds = ["teacher_by_id".as_bytes(), &teacher_id.to_le_bytes()],
+    bump,
+    )]
+    pub teacher_by_id: Box<Account<'info, ProfileById>>,
+
+    #[account(
+    mut,
+    seeds = ["teacher".as_bytes(), teacher_by_id.profile_key.as_ref()],
     bump
     )]
     pub teacher_profile: Box<Account<'info, Teacher>>,
@@ -43,13 +52,29 @@ pub struct LessonCreate<'info> {
 
 pub fn handler(
     ctx: Context<LessonCreate>,
-    student: u32,
-    subject: u32,
+    teacher_id: u32,
+    student_id: u32,
+    subject_id: u32,
     fee: u64,
     duration: u16,
     date_time: u64,
 ) -> Result<()> {
-    // Store data
+    let teacher_profile = &mut ctx.accounts.teacher_profile;
+    let lesson_id = teacher_profile.count_lessons;
+
+    // Attempt to register this lesson on the teachers schedule
+    //TODO make DoS expensive; increase lesson account size?
+    if !teacher_profile.schedule_lesson(subject_id) {
+        return Err(errors::ErrorCode::ScheduleLimitReached.into());
+    }
+
+    // Increase total number of lessons created by teacher
+    teacher_profile.count_lessons = teacher_profile
+        .count_lessons
+        .checked_add(1)
+        .ok_or(errors::ErrorCode::OverflowError)?;
+
+    // Store lesson related data
     let lesson = &mut ctx.accounts.lesson;
     lesson.timestamp = date_time;
     lesson.duration = duration;
@@ -57,20 +82,14 @@ pub fn handler(
     lesson.fee_deposited = 0;
     lesson.repeat = 0;
     lesson.cancel = 0;
-    lesson.student = student;
-    lesson.subject_id = subject;
-
-    // Increase total number of lessons created by teacher
-    let teacher = &mut ctx.accounts.teacher_profile;
-    teacher.count_lessons = teacher
-        .count_lessons
-        .checked_add(1)
-        .ok_or(errors::ErrorCode::OverflowError)?;
+    lesson.student = student_id;
+    lesson.subject_id = subject_id;
 
     emit!(LessonCreated {
-        teacher: ctx.accounts.payer.key(),
-        subject,
-        student
+        teacher_id,
+        student_id,
+        lesson_id,
+        subject_id,
     });
 
     Ok(())

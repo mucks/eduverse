@@ -7,4 +7,10 @@ pub enum ErrorCode {
 
     #[msg("Not authorized to perform this action")]
     NotAuthorized, // 6001
+
+    #[msg("You can not add any more subjects")]
+    SubjectLimitReached, // 6002
+
+    #[msg("This teachers schedule is currently full")]
+    ScheduleLimitReached, // 6003
 }

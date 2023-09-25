@@ -6,8 +6,8 @@ use crate::state::{Review, ReviewById, Student, Teacher};
 
 #[event]
 pub struct TeacherReviewCreated {
-    account: Pubkey,
-    teacher: Pubkey,
+    account_key_review: Pubkey,
+    account_key_teacher: Pubkey,
     stars: u8,
 }
 
@@ -68,21 +68,21 @@ pub fn handler(ctx: Context<CreateReviewTeacher>, stars: u8, text: String) -> Re
     review.text = text;
 
     // Increase number of teachers reviews
-    let teacher = &mut ctx.accounts.teacher_profile;
-    teacher.count_reviews = teacher
+    let teacher_profile = &mut ctx.accounts.teacher_profile;
+    teacher_profile.count_reviews = teacher_profile
         .count_reviews
         .checked_add(1)
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     // Increase total number of stars for teacher
-    teacher.count_stars = teacher
+    teacher_profile.count_stars = teacher_profile
         .count_stars
         .checked_add(stars as u32)
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(TeacherReviewCreated {
-        account: ctx.accounts.review.key(),
-        teacher: ctx.accounts.teacher_profile.key(),
+        account_key_review: ctx.accounts.review.key(),
+        account_key_teacher: ctx.accounts.teacher_profile.key(),
         stars
     });
 
