@@ -23,6 +23,7 @@ pub struct LessonBegin<'info> {
 }
 
 pub fn handler(ctx: Context<LessonBegin>, teacher: u32, lesson: u32, student: u32) -> Result<()> {
+    //TODO must have been approved, must have been funded, correct time, ...
     emit!(LessonStarted {
         teacher,
         lesson,

@@ -23,6 +23,7 @@ pub struct LessonEnd<'info> {
 }
 
 pub fn handler(ctx: Context<LessonEnd>, teacher: u32, lesson: u32, student: u32) -> Result<()> {
+    //TODO must have started; maybe collect rent on this; x-fer funds to teacher?; create review related "bookmark" account?
     emit!(LessonEnded {
         teacher,
         lesson,

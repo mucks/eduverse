@@ -26,7 +26,7 @@ pub struct Deposit<'info> {
 }
 
 pub fn handler(ctx: Context<Deposit>, teacher: u32, lesson: u32) -> Result<()> {
-    //TODO transfer SOL to a treasury account for the teacher
+    //TODO transfer SOL to a treasury account for the teacher; USDC? SOL only?
 
     emit!(FundsDeposited { teacher, lesson });
 

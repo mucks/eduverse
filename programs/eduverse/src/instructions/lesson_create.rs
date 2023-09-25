@@ -17,7 +17,7 @@ fee: u64,
 duration: u16,
 date_time: u64,
 )]
-pub struct CreateLesson<'info> {
+pub struct LessonCreate<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -42,7 +42,7 @@ pub struct CreateLesson<'info> {
 }
 
 pub fn handler(
-    ctx: Context<CreateLesson>,
+    ctx: Context<LessonCreate>,
     student: u32,
     subject: u32,
     fee: u64,
