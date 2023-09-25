@@ -21,7 +21,7 @@ date_time: u64,
 )]
 pub struct LessonCreate<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>,//TODO either teacher or student; dont have the teacher key; does it matter if creator pays for it
+    pub payer: Signer<'info>, //TODO either teacher or student; dont have the teacher key; does it matter if creator pays for it
 
     #[account(
     seeds = ["teacher_by_id".as_bytes(), &teacher_id.to_le_bytes()],

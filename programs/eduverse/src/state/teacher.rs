@@ -8,6 +8,9 @@ pub struct Teacher {
     /// Profile number
     pub profile_id: u32,
 
+    /// The date that this teacher registered
+    pub registered_at: i64,
+
     /// Profile name
     pub title: String,
 
