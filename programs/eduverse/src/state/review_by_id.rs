@@ -8,5 +8,5 @@ pub struct ReviewById {
 }
 
 impl ReviewById {
-    pub const LEN: usize = std::mem::size_of::<ReviewById>();
+    pub const LEN: usize = std::mem::size_of::<ReviewById>() + 8;
 }

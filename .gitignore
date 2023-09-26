@@ -1,4 +1,6 @@
 # Default ignored files
-.idea
+/.anchor
+/.idea
 /target
 /node_modules
+/yarn.lock

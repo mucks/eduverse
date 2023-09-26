@@ -67,8 +67,6 @@ pub fn handler(
     teacher_profile.website = website;
     teacher_profile.telegram = telegram;
     teacher_profile.twitter = twitter;
-    teacher_profile.count_reviews = 0;
-    teacher_profile.count_stars = 0;
     // Lesson 0 won't be a valid id, since lesson references are stored in an array where 0 means empty
     teacher_profile.count_lessons = 1;
 

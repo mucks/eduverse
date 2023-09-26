@@ -8,5 +8,5 @@ pub struct ProfileById {
 }
 
 impl ProfileById {
-    pub const LEN: usize = std::mem::size_of::<ProfileById>();
+    pub const LEN: usize = std::mem::size_of::<ProfileById>() + 8;
 }

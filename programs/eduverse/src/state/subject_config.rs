@@ -9,5 +9,5 @@ pub struct SubjectConfig {
 }
 
 impl SubjectConfig {
-    pub const LEN: usize = std::mem::size_of::<SubjectConfig>();
+    pub const LEN: usize = std::mem::size_of::<SubjectConfig>() + 8;
 }

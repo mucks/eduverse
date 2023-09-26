@@ -9,5 +9,5 @@ pub struct SubjectTeacher {
 }
 
 impl SubjectTeacher {
-    pub const LEN: usize = std::mem::size_of::<SubjectTeacher>();
+    pub const LEN: usize = std::mem::size_of::<SubjectTeacher>() + 8;
 }
