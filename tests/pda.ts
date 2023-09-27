@@ -33,3 +33,15 @@ export const deriveStudentById = (program: Program<Eduverse>, id: number) =>
         [textEncoder.encode("student_by_id"), new anchor.BN(id).toArrayLike(Buffer, "le", 4)],
         program.programId
     );
+
+export const deriveSubjectConfig = (program: Program<Eduverse>, subject_id: number) =>
+    anchor.web3.PublicKey.findProgramAddressSync(
+        [textEncoder.encode("subject_config"), new anchor.BN(subject_id).toArrayLike(Buffer, "le", 4)],
+        program.programId
+    );
+
+export const deriveSubjectToTeacher = (program: Program<Eduverse>, subject_id: number, teacher_num: number) =>
+    anchor.web3.PublicKey.findProgramAddressSync(
+        [textEncoder.encode("subject_teacher"), new anchor.BN(subject_id).toArrayLike(Buffer, "le", 4), new anchor.BN(teacher_num).toArrayLike(Buffer, "le", 4)],
+        program.programId
+    );

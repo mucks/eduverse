@@ -46,6 +46,7 @@ pub struct CreateStudent<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Create a new student profile. The profile is created for the signer of the call. A lookup account is also created.
 pub fn handler(ctx: Context<CreateStudent>, title: String, contact_info: String) -> Result<()> {
     let config = &mut ctx.accounts.config;
 

@@ -22,6 +22,7 @@ pub struct Initialize<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Initialize the config for the app. This does not currently require any permissions, as there is no admin.
 pub fn handler(_ctx: Context<Initialize>) -> Result<()> {
     Ok(())
 }

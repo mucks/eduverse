@@ -6,7 +6,7 @@ pub mod initialize;
 pub mod lesson_begin;
 pub mod lesson_create;
 pub mod lesson_end;
-pub mod register_subject;
+pub mod subject_register;
 pub mod withdraw;
 
 pub use create_review_teacher::*;
@@ -17,5 +17,5 @@ pub use initialize::*;
 pub use lesson_begin::*;
 pub use lesson_create::*;
 pub use lesson_end::*;
-pub use register_subject::*;
+pub use subject_register::*;
 pub use withdraw::*;

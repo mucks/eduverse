@@ -12,7 +12,7 @@ pub struct SubjectRegistered {
 #[instruction(
 subject_id: u32,
 )]
-pub struct RegisterSubject<'info> {
+pub struct SubjectRegister<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -46,7 +46,8 @@ pub struct RegisterSubject<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<RegisterSubject>, subject_id: u32) -> Result<()> {
+/// A teacher can register a certain subject that they want to teach. If necessary the subject config account will also be created.
+pub fn handler(ctx: Context<SubjectRegister>, subject_id: u32) -> Result<()> {
     let teacher_profile = &mut ctx.accounts.teacher_profile;
 
     // Add this subject to subjects taught by this teacher

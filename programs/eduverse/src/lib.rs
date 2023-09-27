@@ -39,8 +39,8 @@ pub mod eduverse {
     }
 
     /// The teacher can register a new subject that they teach
-    pub fn teacher_register_subject(ctx: Context<RegisterSubject>, subject_id: u32) -> Result<()> {
-        register_subject::handler(ctx, subject_id)
+    pub fn teacher_register_subject(ctx: Context<SubjectRegister>, subject_id: u32) -> Result<()> {
+        subject_register::handler(ctx, subject_id)
     }
 
     /// Either teacher or student can create a lesson

@@ -48,6 +48,7 @@ pub struct CreateTeacher<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Create a new teacher profile. The profile is created for the signer of the call. A lookup account is also created.
 pub fn handler(
     ctx: Context<CreateTeacher>,
     title: String,
