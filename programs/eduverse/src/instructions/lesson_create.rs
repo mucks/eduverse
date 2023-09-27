@@ -31,8 +31,7 @@ pub struct LessonCreate<'info> {
 
     #[account(
     mut,
-    seeds = ["teacher".as_bytes(), teacher_by_id.profile_key.as_ref()],
-    bump
+    address = teacher_by_id.profile_key
     )]
     pub teacher_profile: Box<Account<'info, Teacher>>,
 
@@ -62,11 +61,18 @@ pub fn handler(
     let teacher_profile = &mut ctx.accounts.teacher_profile;
     let lesson_id = teacher_profile.count_lessons;
 
+    // Make sure this teacher registered this particular subject
+    if !teacher_profile.teaches_subject(subject_id) {
+        return Err(errors::ErrorCode::SubjectNotTaught.into());
+    }
+
     // Attempt to register this lesson on the teachers schedule
-    //TODO make DoS expensive; increase lesson account size?
+    //TODO make DoS expensive; increase lesson account size? Make accounts sweepable for teacher.
     if !teacher_profile.schedule_lesson(subject_id) {
         return Err(errors::ErrorCode::ScheduleLimitReached.into());
     }
+
+    //TODO try to edit student - should have a map as well? so can see their schedule
 
     // Increase total number of lessons created by teacher
     teacher_profile.count_lessons = teacher_profile

@@ -34,14 +34,20 @@ export const deriveStudentById = (program: Program<Eduverse>, id: number) =>
         program.programId
     );
 
-export const deriveSubjectConfig = (program: Program<Eduverse>, subject_id: number) =>
+export const deriveSubjectConfig = (program: Program<Eduverse>, subjectId: number) =>
     anchor.web3.PublicKey.findProgramAddressSync(
-        [textEncoder.encode("subject_config"), new anchor.BN(subject_id).toArrayLike(Buffer, "le", 4)],
+        [textEncoder.encode("subject_config"), new anchor.BN(subjectId).toArrayLike(Buffer, "le", 4)],
         program.programId
     );
 
-export const deriveSubjectToTeacher = (program: Program<Eduverse>, subject_id: number, teacher_num: number) =>
+export const deriveSubjectToTeacher = (program: Program<Eduverse>, subjectId: number, teacherNum: number) =>
     anchor.web3.PublicKey.findProgramAddressSync(
-        [textEncoder.encode("subject_teacher"), new anchor.BN(subject_id).toArrayLike(Buffer, "le", 4), new anchor.BN(teacher_num).toArrayLike(Buffer, "le", 4)],
+        [textEncoder.encode("subject_teacher"), new anchor.BN(subjectId).toArrayLike(Buffer, "le", 4), new anchor.BN(teacherNum).toArrayLike(Buffer, "le", 4)],
+        program.programId
+    );
+
+export const deriveLesson = (program: Program<Eduverse>, teacherProfile: anchor.web3.PublicKey, teacherLessonNum: number) =>
+    anchor.web3.PublicKey.findProgramAddressSync(
+        [textEncoder.encode("lesson"), teacherProfile.toBuffer(), new anchor.BN(teacherLessonNum).toArrayLike(Buffer, "le", 4)],
         program.programId
     );

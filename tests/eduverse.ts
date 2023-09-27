@@ -4,9 +4,9 @@ import { Eduverse } from "../target/types/eduverse";
 
 import {expect} from "chai";
 
-import {createStudent, createTeacher, initialize, registerSubject} from "./instruction";
+import {createStudent, createTeacher, initialize, registerLesson, registerSubject} from "./instruction";
 import {
-  deriveConfig,
+  deriveConfig, deriveLesson,
   deriveStudentById,
   deriveStudentProfile,
   deriveSubjectConfig, deriveSubjectToTeacher,
@@ -37,6 +37,7 @@ describe("eduverse", () => {
   const [accStudentById0, bumpStudentById0] = deriveStudentById(program, 0);
   const [accSubjectConfigOne, bumpSubjectConfigOne] = deriveSubjectConfig(program, SUBJECT_ONE);
   const [accSubjectOneToTeacher0, bumpSubjectOneToTeacher0] = deriveSubjectToTeacher(program, SUBJECT_ONE, 0);
+  const [accTeacherAliceLesson1, bumpTeacherAliceLesson1] = deriveLesson(program, accTeacherProfileAlice, 1);
 
 
   it("App Airdrops & Initializes", async () => {
@@ -63,5 +64,15 @@ describe("eduverse", () => {
   it("Alice can register a subject", async () => {
     const subjectToTeacher = await registerSubject(program, accAlice, accTeacherProfileAlice, accSubjectConfigOne, accSubjectOneToTeacher0, SUBJECT_ONE);
     expect(subjectToTeacher).to.not.be.undefined;
+  });
+
+  it("Bob can schedule a lesson with Alice for some subject", async () => {
+    // Does not work for a subject not taught by Alice
+    let lessonAlice1 = await registerLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accTeacherAliceLesson1, 0, 0, SUBJECT_TWO, new anchor.BN(100_000), 60, new anchor.BN(1695819179), "This teacher does not teach the specified subject");
+    expect(lessonAlice1).to.be.undefined;
+
+    // Does work for a subject taught by Alice
+    lessonAlice1 = await registerLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accTeacherAliceLesson1, 0, 0, SUBJECT_ONE, new anchor.BN(100_000), 60, new anchor.BN(1695819179), "");
+    expect(lessonAlice1).to.not.be.undefined;
   });
 });

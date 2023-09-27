@@ -13,4 +13,7 @@ pub enum ErrorCode {
 
     #[msg("This teachers schedule is currently full")]
     ScheduleLimitReached, // 6003
+
+    #[msg("This teacher does not teach the specified subject")]
+    SubjectNotTaught, // 6004
 }

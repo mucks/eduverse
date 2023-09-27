@@ -75,11 +75,18 @@ impl Teacher {
         }
         false
     }
+
+    /// Attempts to find a specific subject in the list of subjects taught by this teacher.
+    pub fn teaches_subject(&self, subject_id: u32) -> bool {
+        self.subjects_registered.contains(&subject_id)
+    }
 }
 
 impl Default for Teacher {
     fn default() -> Teacher {
         Teacher {
+            // Lesson 0 won't be a valid id, since lesson references are stored in an array where 0 means empty
+            count_lessons: 1,
             lesson_data: [0u32; 200],
             ..Default::default()
         }

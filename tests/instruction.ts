@@ -87,3 +87,28 @@ export const registerSubject = async(program: Program<Eduverse>, txPayer: anchor
 
     return await program.account.subjectTeacher.fetch(accSubjectTeacher);
 }
+
+export const registerLesson = async(program: Program<Eduverse>, txPayer: anchor.web3.Signer, accTeacherById: anchor.web3.PublicKey, accTeacherProfile: anchor.web3.PublicKey, accLesson: anchor.web3.PublicKey, teacherId: number, studentId: number, subjectId: number, fee: anchor.BN, duration: number, dateTime: anchor.BN, expectedError: String) => {
+    let tx;
+    try {
+        tx = await program.methods
+            .lessonCreate(teacherId, studentId, subjectId, fee, duration, dateTime)
+            .accounts({
+                payer: txPayer.publicKey,
+                teacherById: accTeacherById,
+                teacherProfile: accTeacherProfile,
+                lesson: accLesson
+            })
+            .signers([txPayer])
+            .rpc();
+    }
+    catch (e) {
+        if ( expectedError === "" || !e.toString().includes(expectedError) )
+        {
+            console.log("Error: ", e, " TX: ", tx);
+        }
+        return undefined;
+    }
+
+    return await program.account.lesson.fetch(accLesson);
+}
