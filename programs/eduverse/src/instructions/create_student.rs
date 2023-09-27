@@ -51,14 +51,15 @@ pub fn handler(ctx: Context<CreateStudent>, title: String, contact_info: String)
     let config = &mut ctx.accounts.config;
 
     // Store data of student
-    let student = &mut ctx.accounts.student_profile;
-    student.profile_id = config.count_students;
-    student.title = title;
-    student.contact_info = contact_info;
+    let student_profile = &mut ctx.accounts.student_profile;
+    student_profile.profile_id = config.count_students;
+    student_profile.authority = ctx.accounts.payer.key();
+    student_profile.title = title;
+    student_profile.contact_info = contact_info;
 
     // Store student profile_id to pubkey lookup
     let student_by_id = &mut ctx.accounts.student_by_id;
-    student_by_id.profile_key = student.key();
+    student_by_id.profile_key = student_profile.key();
 
     // Increase number of student profiles
     config.count_students = config
@@ -67,7 +68,7 @@ pub fn handler(ctx: Context<CreateStudent>, title: String, contact_info: String)
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(StudentCreated {
-        account_key_student: student.key(),
+        account_key_student: student_profile.key(),
     });
 
     Ok(())

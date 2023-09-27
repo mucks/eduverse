@@ -54,7 +54,9 @@ pub mod eduverse {
         duration: u16,
         date_time: u64,
     ) -> Result<()> {
-        lesson_create::handler(ctx, teacher_id, student_id, subject_id, fee, duration, date_time)
+        lesson_create::handler(
+            ctx, teacher_id, student_id, subject_id, fee, duration, date_time,
+        )
     }
 
     /// Starts the lesson

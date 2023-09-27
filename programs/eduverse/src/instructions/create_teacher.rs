@@ -61,6 +61,7 @@ pub fn handler(
     // Store data of teacher
     let teacher_profile = &mut ctx.accounts.teacher_profile;
     teacher_profile.profile_id = config.count_teachers;
+    teacher_profile.authority = ctx.accounts.payer.key();
     teacher_profile.registered_at = Clock::get().unwrap().unix_timestamp;
     teacher_profile.title = title;
     teacher_profile.availability = 0; //TODO

@@ -1,5 +1,5 @@
 use crate::errors;
-use crate::state::{Lesson, ProfileById, Teacher};
+use crate::state::{Lesson, ProfileById, Student, Teacher};
 use anchor_lang::prelude::*;
 
 #[event]
@@ -20,8 +20,9 @@ duration: u16,
 date_time: u64,
 )]
 pub struct LessonCreate<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>, //TODO either teacher or student; dont have the teacher key; does it matter if creator pays for it
+    #[account(mut,
+    constraint = (payer.key() == teacher_profile.authority || payer.key() == student_profile.authority))]
+    pub payer: Signer<'info>,
 
     #[account(
     seeds = ["teacher_by_id".as_bytes(), &teacher_id.to_le_bytes()],
@@ -34,6 +35,15 @@ pub struct LessonCreate<'info> {
     address = teacher_by_id.profile_key
     )]
     pub teacher_profile: Box<Account<'info, Teacher>>,
+
+    #[account(
+    seeds = ["student_by_id".as_bytes(), &student_id.to_le_bytes()],
+    bump,
+    )]
+    pub student_by_id: Box<Account<'info, ProfileById>>,
+
+    #[account(address = student_by_id.profile_key)]
+    pub student_profile: Box<Account<'info, Student>>,
 
     #[account(
     init,

@@ -9,6 +9,9 @@ pub struct Student {
     /// Profile number
     pub profile_id: u32,
 
+    /// Authority
+    pub authority: Pubkey,
+
     /// Profile name
     pub title: String,
 

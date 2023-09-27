@@ -88,7 +88,7 @@ export const registerSubject = async(program: Program<Eduverse>, txPayer: anchor
     return await program.account.subjectTeacher.fetch(accSubjectTeacher);
 }
 
-export const registerLesson = async(program: Program<Eduverse>, txPayer: anchor.web3.Signer, accTeacherById: anchor.web3.PublicKey, accTeacherProfile: anchor.web3.PublicKey, accLesson: anchor.web3.PublicKey, teacherId: number, studentId: number, subjectId: number, fee: anchor.BN, duration: number, dateTime: anchor.BN, expectedError: String) => {
+export const registerLesson = async(program: Program<Eduverse>, txPayer: anchor.web3.Signer, accTeacherById: anchor.web3.PublicKey, accTeacherProfile: anchor.web3.PublicKey, accStudentById: anchor.web3.PublicKey, accStudentProfile: anchor.web3.PublicKey, accLesson: anchor.web3.PublicKey, teacherId: number, studentId: number, subjectId: number, fee: anchor.BN, duration: number, dateTime: anchor.BN, expectedError: String) => {
     let tx;
     try {
         tx = await program.methods
@@ -97,6 +97,8 @@ export const registerLesson = async(program: Program<Eduverse>, txPayer: anchor.
                 payer: txPayer.publicKey,
                 teacherById: accTeacherById,
                 teacherProfile: accTeacherProfile,
+                studentById: accStudentById,
+                studentProfile: accStudentProfile,
                 lesson: accLesson
             })
             .signers([txPayer])
