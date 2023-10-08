@@ -68,6 +68,13 @@ pub fn handler(
         return Err(errors::ErrorCode::LessonScheduledAtDifferentTime.into());
     }
 
+    // Update the lesson state based on who submitted the tx
+    if *ctx.accounts.payer.key == ctx.accounts.teacher_profile.authority {
+        lesson.status_teacher = LessonState::Started
+    } else if *ctx.accounts.payer.key == ctx.accounts.student_profile.authority {
+        lesson.status_student = LessonState::Started
+    };
+
     emit!(LessonBegins {
         teacher_id,
         lesson_id,
