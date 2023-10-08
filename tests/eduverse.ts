@@ -4,7 +4,7 @@ import { Eduverse } from "../target/types/eduverse";
 
 import {expect} from "chai";
 
-import {createStudent, createTeacher, initialize, registerLesson, registerSubject} from "./instruction";
+import {approveLesson, createStudent, createTeacher, initialize, registerLesson, registerSubject} from "./instruction";
 import {
   deriveConfig, deriveLesson,
   deriveStudentById,
@@ -28,6 +28,7 @@ describe("eduverse", () => {
   const accAdmin = (program.provider as anchor.AnchorProvider).wallet;
   const accAlice = anchor.web3.Keypair.generate();
   const accBob = anchor.web3.Keypair.generate();
+  const accCharlie = anchor.web3.Keypair.generate();
 
   // Prepare some PDAs
   const [accConfig, bumpConfig] = deriveConfig(program);
@@ -46,6 +47,9 @@ describe("eduverse", () => {
 
     const airdrop2 = await program.provider.connection.requestAirdrop(accBob.publicKey, 100_000_000);
     await program.provider.connection.confirmTransaction(airdrop2);
+
+    const airdrop3 = await program.provider.connection.requestAirdrop(accCharlie.publicKey, 100_000_000);
+    await program.provider.connection.confirmTransaction(airdrop3);
 
     const config = await initialize(program, accAlice, accConfig);
     expect(config).to.not.be.undefined;
@@ -67,12 +71,29 @@ describe("eduverse", () => {
   });
 
   it("Bob can schedule a lesson with Alice for a subject Alice teaches", async () => {
+    // Schedule time
+    let next_hour = Math.floor(Date.now() / 1000) + 3600;
+
     // Does not work for a subject not taught by Alice
-    let lessonAlice1 = await registerLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 0, SUBJECT_TWO, new anchor.BN(100_000), 60, new anchor.BN(1695819179), "This teacher does not teach the specified subject");
+    let lessonAlice1 = await registerLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 0, SUBJECT_TWO, new anchor.BN(100_000), 60, new anchor.BN(next_hour), "This teacher does not teach the specified subject");
+    expect(lessonAlice1).to.be.undefined;
+
+    // Charlie can not create a lesson for Bob taught by Alice
+    lessonAlice1 = await registerLesson(program, accCharlie, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 0, SUBJECT_ONE, new anchor.BN(100_000), 60, new anchor.BN(next_hour), "A raw constraint was violated");
     expect(lessonAlice1).to.be.undefined;
 
     // Does work for a subject taught by Alice
-    lessonAlice1 = await registerLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 0, SUBJECT_ONE, new anchor.BN(100_000), 60, new anchor.BN(1695819179), "");
+    lessonAlice1 = await registerLesson(program, accBob, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 0, SUBJECT_ONE, new anchor.BN(100_000), 60, new anchor.BN(next_hour), "");
+    expect(lessonAlice1).to.not.be.undefined;
+  });
+
+  it("Alice can approve the lesson scheduled by Bob, but Bob can not", async () => {
+    // Does not work for Bob
+    let lessonAlice1 = await approveLesson(program, accBob, accTeacherById0, accTeacherProfileAlice, accTeacherAliceLesson1, 0, 1, " An address constraint was violated");
+    expect(lessonAlice1).to.be.undefined;
+
+    // Does work for Alice
+    lessonAlice1 = await approveLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accTeacherAliceLesson1, 0, 1, "");
     expect(lessonAlice1).to.not.be.undefined;
   });
 });

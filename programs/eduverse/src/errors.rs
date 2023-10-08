@@ -16,4 +16,10 @@ pub enum ErrorCode {
 
     #[msg("This teacher does not teach the specified subject")]
     SubjectNotTaught, // 6004
+
+    #[msg("Can not schedule lesson for right away or too far into the future")]
+    LessonScheduleBadDateTime, // 6005
+
+    #[msg("Can only approve lessons in pending state")]
+    LessonStateNotPending, // 6006
 }

@@ -43,7 +43,7 @@ pub mod eduverse {
         subject_register::handler(ctx, subject_id)
     }
 
-    /// Either teacher or student can create a lesson
+    /// Either teacher or student can create / schedule a lesson
     ///TODO since this will be limited a DoS becomes possible, therefore fees must be paid that teacher can collect - so DoS makes teacher rich without doing anything
     pub fn lesson_create(
         ctx: Context<LessonCreate>,
@@ -57,6 +57,15 @@ pub mod eduverse {
         lesson_create::handler(
             ctx, teacher_id, student_id, subject_id, fee, duration, date_time,
         )
+    }
+
+    /// Approve the lesson. Only for teachers. Students should deposit the funds for the lesson in order to "approve" it
+    pub fn lesson_approve(
+        ctx: Context<LessonApprove>,
+        teacher_id: u32,
+        lesson_id: u32,
+    ) -> Result<()> {
+        lesson_approve::handler(ctx, teacher_id, lesson_id)
     }
 
     /// Starts the lesson

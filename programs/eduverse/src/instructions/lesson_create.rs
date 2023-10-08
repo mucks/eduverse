@@ -1,5 +1,6 @@
 use crate::errors;
 use crate::state::{Lesson, ProfileById, Student, Teacher};
+use crate::utils::LessonState;
 use anchor_lang::prelude::*;
 
 #[event]
@@ -59,6 +60,7 @@ pub struct LessonCreate<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Either teacher or student can create / schedule a lesson
 pub fn handler(
     ctx: Context<LessonCreate>,
     teacher_id: u32,
@@ -69,7 +71,14 @@ pub fn handler(
     date_time: u64,
 ) -> Result<()> {
     let teacher_profile = &mut ctx.accounts.teacher_profile;
+    let student_profile = &mut ctx.accounts.student_profile;
     let lesson_id = teacher_profile.count_lessons;
+
+    // Some limit on how far into the future lessons can be scheduled
+    let current_time = Clock::get().unwrap().unix_timestamp as u64;
+    if (date_time < current_time + 1800) || (date_time > current_time + 5184000) {
+        return Err(errors::ErrorCode::LessonScheduleBadDateTime.into());
+    } //TODO these should probably be configurable by each teacher individually?
 
     // Make sure this teacher registered this particular subject
     if !teacher_profile.teaches_subject(subject_id) {
@@ -77,12 +86,13 @@ pub fn handler(
     }
 
     // Attempt to register this lesson on the teachers schedule
-    //TODO make DoS expensive; increase lesson account size? Make accounts sweepable for teacher.
+    //TODO make DoS expensive; increase lesson account size? Make accounts sweepable for teacher. (fake teacher could spam student as well)
     if !teacher_profile.schedule_lesson(subject_id) {
         return Err(errors::ErrorCode::ScheduleLimitReached.into());
     }
 
     //TODO try to edit student - should have a map as well? so can see their schedule
+    //TODO could check teachers schedule for conflicts; but appears out of scope; teacher might choose 1 student over another if there is a conflict
 
     // Increase total number of lessons created by teacher
     teacher_profile.count_lessons = teacher_profile
@@ -92,14 +102,25 @@ pub fn handler(
 
     // Store lesson related data
     let lesson = &mut ctx.accounts.lesson;
+    lesson.teacher_id = teacher_id;
+    lesson.student_id = student_id;
+    lesson.subject_id = subject_id;
+    lesson.status_teacher = if *ctx.accounts.payer.key == teacher_profile.authority {
+        LessonState::Approved
+    } else {
+        LessonState::Pending
+    };
+    lesson.status_student = if *ctx.accounts.payer.key == student_profile.authority {
+        LessonState::Approved
+    } else {
+        LessonState::Pending
+    };
     lesson.timestamp = date_time;
     lesson.duration = duration;
     lesson.fee_total = fee;
     lesson.fee_deposited = 0;
     lesson.repeat = 0;
     lesson.cancel = 0;
-    lesson.student = student_id;
-    lesson.subject_id = subject_id;
 
     emit!(LessonCreated {
         teacher_id,

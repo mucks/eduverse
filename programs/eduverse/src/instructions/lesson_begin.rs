@@ -2,16 +2,16 @@ use anchor_lang::prelude::*;
 
 #[event]
 pub struct LessonStarted {
-    teacher: u32,
-    lesson: u32,
-    student: u32,
+    teacher_id: u32,
+    lesson_id: u32,
+    student_id: u32,
 }
 
 #[derive(Accounts)]
 #[instruction(
-teacher: u32,
-lesson: u32,
-student: u32,
+teacher_id: u32,
+lesson_id: u32,
+student_id: u32,
 )]
 pub struct LessonBegin<'info> {
     #[account(mut)]
@@ -22,12 +22,17 @@ pub struct LessonBegin<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<LessonBegin>, teacher: u32, lesson: u32, student: u32) -> Result<()> {
+pub fn handler(
+    ctx: Context<LessonBegin>,
+    teacher_id: u32,
+    lesson_id: u32,
+    student_id: u32,
+) -> Result<()> {
     //TODO must have been approved, must have been funded, correct time, ...
     emit!(LessonStarted {
-        teacher,
-        lesson,
-        student
+        teacher_id,
+        lesson_id,
+        student_id
     });
 
     Ok(())

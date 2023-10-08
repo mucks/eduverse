@@ -1,3 +1,4 @@
+use crate::utils::LessonState;
 use anchor_lang::prelude::*;
 
 #[account]
@@ -5,6 +6,21 @@ use anchor_lang::prelude::*;
 pub struct Lesson {
     /// Version
     pub version: u8,
+
+    /// Who is the teacher
+    pub teacher_id: u32,
+
+    /// Who is the student
+    pub student_id: u32,
+
+    /// What is the subject being taught
+    pub subject_id: u32,
+
+    /// The teachers response to this lesson
+    pub status_teacher: LessonState,
+
+    /// The students response to this lesson
+    pub status_student: LessonState,
 
     /// When this lesson is due to take place
     pub timestamp: u64,
@@ -23,12 +39,6 @@ pub struct Lesson {
 
     /// Up till when can this lesson be cancelled?
     pub cancel: u8, //TODO may need a deposit deadline, cancel details, refunds? .. or just request to cancel + refund
-
-    /// Who is the student
-    pub student: u32, //TODO profile u32 or pubkey? (depends on whether students should havea profile or not)
-
-    /// What is the subject being taught
-    pub subject_id: u32, //TODO make this an enum or leave it as a number for the frontend
 }
 
 impl Lesson {
