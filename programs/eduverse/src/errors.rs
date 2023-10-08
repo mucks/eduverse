@@ -22,4 +22,13 @@ pub enum ErrorCode {
 
     #[msg("Can only approve lessons in pending state")]
     LessonStateNotPending, // 6006
+
+    #[msg("Can only begin lessons in approved state")]
+    LessonStateNotApproved, // 6007
+
+    #[msg("This lesson has not yet been funded")]
+    LessonNotFunded, // 6008
+
+    #[msg("This lesson has been scheduled to start at another time")]
+    LessonScheduledAtDifferentTime, // 6009
 }

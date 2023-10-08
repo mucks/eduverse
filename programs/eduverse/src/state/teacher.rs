@@ -86,12 +86,25 @@ impl Teacher {
 }
 
 impl Default for Teacher {
-    fn default() -> Teacher {
-        Teacher {
+    fn default() -> Self {
+        Self {
+            version: 0,
+            profile_id: 0,
+            authority: Default::default(),
+            registered_at: 0,
+            title: Default::default(),
+            availability: 0,
+            timezone: 0,
+            website: Default::default(),
+            telegram: Default::default(),
+            twitter: Default::default(),
+            count_reviews: 0,
+            count_stars: 0,
             // Lesson 0 won't be a valid id, since lesson references are stored in an array where 0 means empty
             count_lessons: 1,
+            count_lessons_cancelled: 0,
             lesson_data: [0u32; 200],
-            ..Default::default()
+            subjects_registered: Default::default(),
         }
     }
 }

@@ -22,12 +22,13 @@ date_time: u64,
 )]
 pub struct LessonCreate<'info> {
     #[account(mut,
-    constraint = (payer.key() == teacher_profile.authority || payer.key() == student_profile.authority))]
+    constraint = (payer.key() == teacher_profile.authority || payer.key() == student_profile.authority)
+    )]
     pub payer: Signer<'info>,
 
     #[account(
     seeds = ["teacher_by_id".as_bytes(), &teacher_id.to_le_bytes()],
-    bump,
+    bump
     )]
     pub teacher_by_id: Box<Account<'info, ProfileById>>,
 
