@@ -89,8 +89,13 @@ pub mod eduverse {
     }
 
     /// The student can deposit funds to a lesson approved by the teacher
-    pub fn lesson_deposit(ctx: Context<Deposit>, todo: u32, lesson_todo: u32) -> Result<()> {
-        deposit::handler(ctx, todo, lesson_todo)
+    pub fn lesson_deposit(
+        ctx: Context<LessonDeposit>,
+        teacher_id: u32,
+        lesson_id: u32,
+        student_id: u32,
+    ) -> Result<()> {
+        lesson_deposit::handler(ctx, teacher_id, lesson_id, student_id)
     }
 
     /// A teacher can withdraw their accumulated funds

@@ -2,12 +2,14 @@ use crate::errors;
 use crate::state::{Lesson, ProfileById, Student, Teacher};
 use crate::utils::LessonState;
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::system_instruction;
 
 #[event]
-pub struct LessonBegins {
+pub struct LessonFundsDeposited {
     teacher_id: u32,
     lesson_id: u32,
     student_id: u32,
+    total_fee: u64,
 }
 
 #[derive(Accounts)]
@@ -16,8 +18,8 @@ teacher_id: u32,
 lesson_id: u32,
 student_id: u32,
 )]
-pub struct LessonBegin<'info> {
-    #[account(constraint = (payer.key() == teacher_profile.authority || payer.key() == student_profile.authority))]
+pub struct LessonDeposit<'info> {
+    #[account(mut, constraint = payer.key() == student_profile.authority @errors::ErrorCode::NotAuthorized)]
     pub payer: Signer<'info>,
 
     #[account(
@@ -46,39 +48,50 @@ pub struct LessonBegin<'info> {
     constraint = lesson.status_teacher == LessonState::Approved @errors::ErrorCode::LessonStateNotApproved
     )]
     pub lesson: Box<Account<'info, Lesson>>,
+
+    pub system_program: Program<'info, System>,
 }
 
-/// Starts the lesson
 pub fn handler(
-    ctx: Context<LessonBegin>,
+    ctx: Context<LessonDeposit>,
     teacher_id: u32,
     lesson_id: u32,
     student_id: u32,
 ) -> Result<()> {
+    let payer = &ctx.accounts.payer;
+    let lesson_key = ctx.accounts.lesson.key();
     let lesson = &mut ctx.accounts.lesson;
+    let total_fee = lesson.fee_total;
 
-    // Lesson fee must have been deposited; fee_total may be 0 if teacher accepted that TODO move error into constraint
-    if lesson.fee_total != lesson.fee_deposited {
-        return Err(errors::ErrorCode::LessonNotFunded.into());
+    //TODO should anyone other than the student be able to fund their lesson?
+    //TODO do we accept SPL tokens such as USDC?
+
+    // Transfer the funds if necessary
+    if total_fee > 0 {
+        // Setup the fund transferring instruction
+        let transfer = system_instruction::transfer(payer.key, &lesson_key, total_fee);
+
+        // Invoke the actual transfer
+        anchor_lang::solana_program::program::invoke_signed(
+            &transfer,
+            &[
+                payer.to_account_info(),
+                lesson.clone().to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+            &[],
+        )?;
     }
 
-    // Check that the start time for this lesson is right TODO decide logic; make constraint
-    let current_time = Clock::get().unwrap().unix_timestamp as u64;
-    if current_time < lesson.timestamp || lesson.timestamp + 3600 > current_time {
-        return Err(errors::ErrorCode::LessonScheduledAtDifferentTime.into());
-    }
+    // Mark funds as deposited and lesson as approved by the student
+    lesson.fee_deposited = total_fee; //TODO make sure funds were transferred etc.
+    lesson.status_student = LessonState::Approved;
 
-    // Update the lesson state based on who submitted the tx
-    if *ctx.accounts.payer.key == ctx.accounts.teacher_profile.authority {
-        lesson.status_teacher = LessonState::Started
-    } else if *ctx.accounts.payer.key == ctx.accounts.student_profile.authority {
-        lesson.status_student = LessonState::Started
-    };
-
-    emit!(LessonBegins {
+    emit!(LessonFundsDeposited {
         teacher_id,
         lesson_id,
-        student_id
+        student_id,
+        total_fee
     });
 
     Ok(())
