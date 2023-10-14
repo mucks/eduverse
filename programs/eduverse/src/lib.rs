@@ -78,14 +78,14 @@ pub mod eduverse {
         lesson_begin::handler(ctx, teacher_id, lesson_id, student_id)
     }
 
-    /// Ends the lesson
-    pub fn lesson_end(
-        ctx: Context<LessonEnd>,
+    /// Close a lesson. Withdraws funds to the teacher
+    pub fn lesson_close(
+        ctx: Context<LessonClose>,
         teacher_id: u32,
         lesson_id: u32,
         student_id: u32,
     ) -> Result<()> {
-        lesson_end::handler(ctx, teacher_id, lesson_id, student_id)
+        lesson_close::handler(ctx, teacher_id, lesson_id, student_id)
     }
 
     /// The student can deposit funds to a lesson approved by the teacher
@@ -96,10 +96,5 @@ pub mod eduverse {
         student_id: u32,
     ) -> Result<()> {
         lesson_deposit::handler(ctx, teacher_id, lesson_id, student_id)
-    }
-
-    /// A teacher can withdraw their accumulated funds
-    pub fn teacher_withdraw_funds(ctx: Context<Withdraw>, todo: u32, amount: u64) -> Result<()> {
-        withdraw::handler(ctx, todo, amount)
     }
 }

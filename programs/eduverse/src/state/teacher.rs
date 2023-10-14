@@ -79,6 +79,16 @@ impl Teacher {
         false
     }
 
+    /// Attempts to remove a lesson from this teacher.
+    pub fn remove_lesson(&mut self, lesson_id: u32) {
+        for itm in &mut self.lesson_data {
+            if *itm == lesson_id {
+                *itm = 0;
+                return;
+            }
+        }
+    }
+
     /// Attempts to find a specific subject in the list of subjects taught by this teacher.
     pub fn teaches_subject(&self, subject_id: u32) -> bool {
         self.subjects_registered.contains(&subject_id)

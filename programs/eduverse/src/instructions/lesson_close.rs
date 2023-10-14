@@ -4,7 +4,7 @@ use crate::utils::LessonState;
 use anchor_lang::prelude::*;
 
 #[event]
-pub struct LessonEnded {
+pub struct LessonClosed {
     teacher_id: u32,
     lesson_id: u32,
     student_id: u32,
@@ -16,8 +16,8 @@ teacher_id: u32,
 lesson_id: u32,
 student_id: u32,
 )]
-pub struct LessonEnd<'info> {
-    #[account(constraint = (payer.key() == teacher_profile.authority || payer.key() == student_profile.authority))]
+pub struct LessonClose<'info> {
+    #[account(constraint = payer.key() == teacher_profile.authority @errors::ErrorCode::NotAuthorized)]
     pub payer: Signer<'info>,
 
     #[account(
@@ -26,7 +26,7 @@ pub struct LessonEnd<'info> {
     )]
     pub teacher_by_id: Box<Account<'info, ProfileById>>,
 
-    #[account(address = teacher_by_id.profile_key)]
+    #[account(mut, address = teacher_by_id.profile_key)]
     pub teacher_profile: Box<Account<'info, Teacher>>,
 
     #[account(
@@ -35,7 +35,7 @@ pub struct LessonEnd<'info> {
     )]
     pub student_by_id: Box<Account<'info, ProfileById>>,
 
-    #[account(address = student_by_id.profile_key)]
+    #[account(mut, address = student_by_id.profile_key)]
     pub student_profile: Box<Account<'info, Student>>,
 
     #[account(
@@ -43,33 +43,33 @@ pub struct LessonEnd<'info> {
     seeds = ["lesson".as_bytes(), teacher_profile.key().as_ref(), &lesson_id.to_le_bytes()],
     bump,
     constraint = lesson.student_id == student_id,
-    constraint = lesson.status_teacher == LessonState::Started @errors::ErrorCode::LessonStateNotStarted
+    constraint = lesson.status_teacher == LessonState::Started @errors::ErrorCode::LessonStateNotStarted,
+    close = payer
     )]
     pub lesson: Box<Account<'info, Lesson>>,
 }
 
 pub fn handler(
-    ctx: Context<LessonEnd>,
+    ctx: Context<LessonClose>,
     teacher_id: u32,
     lesson_id: u32,
     student_id: u32,
 ) -> Result<()> {
-    let lesson = &mut ctx.accounts.lesson;
+    let teacher_profile = &mut ctx.accounts.teacher_profile;
+    let student_profile = &mut ctx.accounts.student_profile;
 
-    // Update the lesson state based on who submitted the tx
-    //TODO Do we need this action to be performed by the student?
-    if *ctx.accounts.payer.key == ctx.accounts.teacher_profile.authority {
-        lesson.status_teacher = LessonState::Ended
-    } else if *ctx.accounts.payer.key == ctx.accounts.student_profile.authority {
-        lesson.status_student = LessonState::Ended
-    };
+    // Cleanup the teachers schedule
+    teacher_profile.remove_lesson(lesson_id);
 
-    //TODO maybe collect rent on this (need a dummy account for student to create a review later on)
-    //TODO cleanup teachers schedule
+    //TODO Cleanup the students schedule
+    //TODO student needs a schedule (teacher_id, lesson_id)
 
-    //TODO move funds to teacher?
+    //TODO Create a dummy account so the student can write a review for the teacher
+    //TODO Have some array on the student with teacher_id they can review; and some u16 incrementing id
 
-    emit!(LessonEnded {
+    //TODO I had some stats that may need updating
+
+    emit!(LessonClosed {
         teacher_id,
         lesson_id,
         student_id
