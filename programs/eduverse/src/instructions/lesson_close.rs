@@ -58,16 +58,18 @@ pub fn handler(
     let teacher_profile = &mut ctx.accounts.teacher_profile;
     let student_profile = &mut ctx.accounts.student_profile;
 
+    //TODO check time is after conclusion? Does it matter?
+
     // Cleanup the teachers schedule
-    teacher_profile.remove_lesson(lesson_id);
+    teacher_profile.schedule_remove(lesson_id);
 
-    //TODO Cleanup the students schedule
-    //TODO student needs a schedule (teacher_id, lesson_id)
+    // Cleanup the students schedule
+    student_profile.schedule_remove(teacher_id, lesson_id);
 
-    //TODO Create a dummy account so the student can write a review for the teacher
-    //TODO Have some array on the student with teacher_id they can review; and some u16 incrementing id
+    // Mark this teacher as reviewable by this student
+    student_profile.reviewable_teacher_add(teacher_id);
 
-    //TODO I had some stats that may need updating
+    //TODO Stats that may need updating?
 
     emit!(LessonClosed {
         teacher_id,

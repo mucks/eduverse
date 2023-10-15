@@ -32,10 +32,7 @@ pub struct LessonCreate<'info> {
     )]
     pub teacher_by_id: Box<Account<'info, ProfileById>>,
 
-    #[account(
-    mut,
-    address = teacher_by_id.profile_key
-    )]
+    #[account(mut, address = teacher_by_id.profile_key)]
     pub teacher_profile: Box<Account<'info, Teacher>>,
 
     #[account(
@@ -44,7 +41,7 @@ pub struct LessonCreate<'info> {
     )]
     pub student_by_id: Box<Account<'info, ProfileById>>,
 
-    #[account(address = student_by_id.profile_key)]
+    #[account(mut, address = student_by_id.profile_key)]
     pub student_profile: Box<Account<'info, Student>>,
 
     #[account(
@@ -88,11 +85,15 @@ pub fn handler(
 
     // Attempt to register this lesson on the teachers schedule
     //TODO make DoS expensive; increase lesson account size? Make accounts sweepable for teacher. (fake teacher could spam student as well)
-    if !teacher_profile.schedule_lesson(subject_id) {
-        return Err(errors::ErrorCode::ScheduleLimitReached.into());
+    if !teacher_profile.schedule_add(lesson_id) {
+        return Err(errors::ErrorCode::ScheduleLimitReachedTeacher.into());
     }
 
-    //TODO try to edit student - should have a map as well? so can see their schedule
+    // Attempt to register this lesson on the students schedule
+    if !student_profile.schedule_add(teacher_id, lesson_id) {
+        return Err(errors::ErrorCode::ScheduleLimitReachedStudent.into());
+    }
+
     //TODO could check teachers schedule for conflicts; but appears out of scope; teacher might choose 1 student over another if there is a conflict
 
     // Increase total number of lessons created by teacher

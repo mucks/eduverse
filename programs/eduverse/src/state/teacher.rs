@@ -54,7 +54,7 @@ pub struct Teacher {
 impl Teacher {
     pub const LEN: usize = std::mem::size_of::<Teacher>() + 600; //TODO
 
-    /// Attempts to register a new subject on this teacher. Can fail if the limit is reached.
+    /// Attempts to register a new subject on this teacher. Can fail if the limit is reached
     pub fn add_subject(&mut self, subject_id: u32) -> bool {
         for itm in &mut self.subjects_registered {
             // Not a guarantee that the subject does not appear after some "hole" (created after removing another subject)
@@ -68,8 +68,8 @@ impl Teacher {
         false
     }
 
-    /// Attempts to schedule a new lesson with this teacher. Can fail if the limit is reached.
-    pub fn schedule_lesson(&mut self, lesson_id: u32) -> bool {
+    /// Attempts to schedule a new lesson with this teacher. Can fail if the limit is reached
+    pub fn schedule_add(&mut self, lesson_id: u32) -> bool {
         for itm in &mut self.lesson_data {
             if *itm == 0 {
                 *itm = lesson_id;
@@ -79,8 +79,8 @@ impl Teacher {
         false
     }
 
-    /// Attempts to remove a lesson from this teacher.
-    pub fn remove_lesson(&mut self, lesson_id: u32) {
+    /// Remove a lesson from this teacher
+    pub fn schedule_remove(&mut self, lesson_id: u32) {
         for itm in &mut self.lesson_data {
             if *itm == lesson_id {
                 *itm = 0;
@@ -89,7 +89,7 @@ impl Teacher {
         }
     }
 
-    /// Attempts to find a specific subject in the list of subjects taught by this teacher.
+    /// Attempts to find a specific subject in the list of subjects taught by this teacher
     pub fn teaches_subject(&self, subject_id: u32) -> bool {
         self.subjects_registered.contains(&subject_id)
     }
