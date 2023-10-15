@@ -17,7 +17,7 @@ lesson_id: u32,
 student_id: u32,
 )]
 pub struct LessonClose<'info> {
-    #[account(constraint = payer.key() == teacher_profile.authority @errors::ErrorCode::NotAuthorized)]
+    #[account(mut, constraint = payer.key() == teacher_profile.authority @errors::ErrorCode::NotAuthorized)]
     pub payer: Signer<'info>,
 
     #[account(

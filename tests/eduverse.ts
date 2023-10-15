@@ -5,13 +5,13 @@ import { Eduverse } from "../target/types/eduverse";
 import {expect} from "chai";
 
 import {
-  approveLesson,
+  approveLesson, closeLesson,
   createStudent,
   createTeacher,
   fundLesson,
   initialize,
   registerLesson,
-  registerSubject
+  registerSubject, startLesson
 } from "./instruction";
 import {
   deriveConfig, deriveLesson,
@@ -113,5 +113,28 @@ describe("eduverse", () => {
 
     lessonAlice1 = await fundLesson(program, accBob, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 1, 0, "");
     expect(lessonAlice1).to.not.be.undefined;
+  });
+
+  it("Alice can start the lesson with Bob", async () => {
+    // Charlie can not start the lesson
+    let lessonAlice1 = await startLesson(program, accCharlie, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 1, 0, "Not authorized to perform this action");
+    expect(lessonAlice1).to.be.undefined;
+
+    // Alice can
+    //TODO need to advance time or deactivate checks
+    lessonAlice1 = await startLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 1, 0, "Not authorized to perform this action");
+    expect(lessonAlice1).to.not.be.undefined;
+  });
+
+  it("Alice can collect funds from the lesson with Bob", async () => {
+    const balanceBefore = await program.provider.connection.getBalance(accAlice.publicKey);
+
+    // Claim balance
+    let studentProfileBob = await closeLesson(program, accAlice, accTeacherById0, accTeacherProfileAlice, accStudentById0, accStudentProfileBob, accTeacherAliceLesson1, 0, 1, 0, "Not authorized to perform this action");
+    expect(studentProfileBob).to.not.be.undefined;//TODO check reviewable teachers?
+
+    const balanceAfter = await program.provider.connection.getBalance(accAlice.publicKey);
+
+    expect(balanceBefore).to.be.equal(balanceAfter+0.5);
   });
 });
