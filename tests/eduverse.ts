@@ -135,6 +135,6 @@ describe("eduverse", () => {
 
     const balanceAfter = await program.provider.connection.getBalance(accAlice.publicKey);
 
-    expect(balanceBefore).to.be.equal(balanceAfter+0.5);
+    expect(balanceAfter).to.be.equal(balanceBefore+1_000_000_000+4_008_960);
   });
 });
