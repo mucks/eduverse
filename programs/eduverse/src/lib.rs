@@ -97,4 +97,15 @@ pub mod eduverse {
     ) -> Result<()> {
         lesson_deposit::handler(ctx, teacher_id, lesson_id, student_id)
     }
+
+    /// A student creates a review for some teacher
+    pub fn review_teacher_create(
+        ctx: Context<CreateReviewTeacher>,
+        teacher_id: u32,
+        student_id: u32,
+        stars: u8,
+        text: String,
+    ) -> Result<()> {
+        create_review_teacher::handler(ctx, teacher_id, student_id, stars, text)
+    }
 }

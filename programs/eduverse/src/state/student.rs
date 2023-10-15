@@ -49,13 +49,14 @@ impl Student {
     }
 
     /// Remove some teacher_id from the array of reviewable teachers
-    pub fn reviewable_teacher_remove(&mut self, teacher_id: u32) {
+    pub fn reviewable_teacher_remove(&mut self, teacher_id: u32) -> bool {
         for itm in &mut self.review_data {
             if *itm == teacher_id {
                 *itm = 0;
-                return;
+                return true;
             }
         }
+        false
     }
 
     /// Attempts to schedule a new lesson with this student for the given teacher. Can fail if the limit is reached

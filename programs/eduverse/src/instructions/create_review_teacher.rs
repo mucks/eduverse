@@ -1,42 +1,47 @@
 use crate::errors;
 use anchor_lang::prelude::*;
-
-use crate::state::lesson::Lesson;
-use crate::state::{Review, ReviewById, Student, Teacher};
+use crate::state::{ProfileById, Review, ReviewById, Student, Teacher};
 
 #[event]
 pub struct TeacherReviewCreated {
+    teacher_id: u32,
+    student_id: u32,
     account_key_review: Pubkey,
-    account_key_teacher: Pubkey,
     stars: u8,
 }
 
 #[derive(Accounts)]
 #[instruction(
-lesson_num: u32,
+teacher_id: u32,
+student_id: u32,
+stars: u8,
 text: String,
 )]
 pub struct CreateReviewTeacher<'info> {
-    #[account(mut)]
+    #[account(mut, constraint = payer.key() == student_profile.authority @errors::ErrorCode::NotAuthorized)]
     pub payer: Signer<'info>,
 
     #[account(
-    seeds = ["student".as_bytes(), payer.key().as_ref()],
+    seeds = ["teacher_by_id".as_bytes(), &teacher_id.to_le_bytes()],
     bump
     )]
-    pub student_profile: Box<Account<'info, Student>>,
+    pub teacher_by_id: Box<Account<'info, ProfileById>>,
 
-    pub teacher_profile: Account<'info, Teacher>,
+    #[account(mut, address = teacher_by_id.profile_key)]
+    pub teacher_profile: Box<Account<'info, Teacher>>,
 
     #[account(
-    seeds = ["lesson".as_bytes(), teacher_profile.key().as_ref(), &lesson_num.to_le_bytes()],
+    seeds = ["student_by_id".as_bytes(), &student_id.to_le_bytes()],
     bump
     )]
-    pub lesson: Account<'info, Lesson>,
+    pub student_by_id: Box<Account<'info, ProfileById>>,
+
+    #[account(mut, address = student_by_id.profile_key)]
+    pub student_profile: Box<Account<'info, Student>>,
 
     #[account(
     init,
-    seeds = ["review".as_bytes(), teacher_profile.key().as_ref(), &student_profile.profile_id.to_le_bytes()],
+    seeds = ["review".as_bytes(), teacher_profile.key().as_ref(), &student_profile.key().as_ref()],
     bump,
     payer = payer,
     space = Review::LEN
@@ -52,15 +57,19 @@ pub struct CreateReviewTeacher<'info> {
     )]
     pub review_lookup: Box<Account<'info, ReviewById>>,
 
-    //TODO need a blocker account for teacher_profile.key + student_profile.key so as to only have one review per user
-    // or do lookup accounts teacher_profile.key : num -> review_acc.key or student_profile_id ("review" _ teacher.key _ student.key)
     pub rent: Sysvar<'info, Rent>,
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<CreateReviewTeacher>, stars: u8, text: String) -> Result<()> {
-    //TODO make sure the lesson took place etc.
+pub fn handler(ctx: Context<CreateReviewTeacher>, teacher_id: u32, student_id: u32, stars: u8, text: String) -> Result<()> {
+    let teacher_profile = &mut ctx.accounts.teacher_profile;
+    let student_profile = &mut ctx.accounts.student_profile;
+
+    // Make sure the student can review this teacher
+    if !student_profile.reviewable_teacher_remove(teacher_id) {
+        return Err(errors::ErrorCode::LessonNotFunded.into());//TODO add some error
+    }//TODO: currently review PDA would be initializeable only once - figure logic for how many reviews 1 student can give 1 teacher etc
 
     // Store data for the review
     let review = &mut ctx.accounts.review;
@@ -68,7 +77,6 @@ pub fn handler(ctx: Context<CreateReviewTeacher>, stars: u8, text: String) -> Re
     review.text = text;
 
     // Increase number of teachers reviews
-    let teacher_profile = &mut ctx.accounts.teacher_profile;
     teacher_profile.count_reviews = teacher_profile
         .count_reviews
         .checked_add(1)
@@ -81,8 +89,9 @@ pub fn handler(ctx: Context<CreateReviewTeacher>, stars: u8, text: String) -> Re
         .ok_or(errors::ErrorCode::OverflowError)?;
 
     emit!(TeacherReviewCreated {
+        teacher_id,
+        student_id,
         account_key_review: ctx.accounts.review.key(),
-        account_key_teacher: ctx.accounts.teacher_profile.key(),
         stars
     });
 
