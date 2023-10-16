@@ -1,14 +1,48 @@
+#[cfg(feature = "anchor")]
 use anchor_lang::prelude::*;
 
+#[cfg(feature = "anchor")]
 mod errors;
+#[cfg(feature = "anchor")]
 mod instructions;
-mod state;
-mod utils;
+pub mod state;
+pub mod utils;
 
+macro_rules! prelude {
+    () => {
+        #[cfg(feature = "anchor")]
+        use anchor_lang::prelude::*;
+
+        #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
+        use mock_anchor::*;
+
+        #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
+        #[allow(unused_imports)]
+        use solana_program::pubkey::Pubkey;
+    };
+}
+
+macro_rules! use_anchor_encoding {
+    () => {
+        #[cfg(feature = "anchor")]
+        use anchor_lang::prelude::*;
+        #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
+        use borsh::BorshDeserialize as AnchorDeserialize;
+        #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
+        use borsh::BorshSerialize as AnchorSerialize;
+    };
+}
+
+pub(crate) use prelude;
+pub(crate) use use_anchor_encoding;
+
+#[cfg(feature = "anchor")]
 use crate::instructions::*;
 
-declare_id!("AihTskBQM3txbtFMx4awbZrMLsyiVE17LvBs7hskq1W");
+#[cfg(feature = "anchor")]
+declare_id!("9PNbQAcpfxq3TH5Jsbncjw33RPSAKFhCW7UQ3ohzbuXq");
 
+#[cfg(feature = "anchor")]
 #[program]
 pub mod eduverse {
     use super::*;

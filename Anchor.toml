@@ -1,14 +1,14 @@
 [features]
 seeds = false
 skip-lint = false
-[programs.localnet]
-eduverse = "AihTskBQM3txbtFMx4awbZrMLsyiVE17LvBs7hskq1W"
+[programs.devnet]
+eduverse = "9PNbQAcpfxq3TH5Jsbncjw33RPSAKFhCW7UQ3ohzbuXq"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

@@ -1,5 +1,5 @@
+crate::prelude!();
 use crate::utils::ScheduleItem;
-use anchor_lang::prelude::*;
 
 #[account]
 pub struct Student {

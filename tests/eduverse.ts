@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Eduverse } from "../target/types/eduverse";
 
-import {expect} from "chai";
+import { expect } from "chai";
 
 import {
   approveLesson, closeLesson,
@@ -135,6 +135,6 @@ describe("eduverse", () => {
 
     const balanceAfter = await program.provider.connection.getBalance(accAlice.publicKey);
 
-    expect(balanceAfter).to.be.equal(balanceBefore+1_000_000_000+4_008_960);
+    expect(balanceAfter).to.be.equal(balanceBefore + 1_000_000_000 + 4_008_960);
   });
 });

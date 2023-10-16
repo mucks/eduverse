@@ -9,11 +9,18 @@ crate-type = ["cdylib", "lib"]
 name = "eduverse"
 
 [features]
+anchor = ["anchor-lang"]
+wasm = ["solana-program", "mock-anchor"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 cpi = ["no-entrypoint"]
-default = []
+default = ["anchor"]
 
 [dependencies]
-anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
+anchor-lang = { version = "0.28.0", features = [
+    "init-if-needed",
+], optional = true }
+solana-program = { version = "1.16", optional = true }
+mock-anchor = { path = "../../mock-anchor", optional = true }
+borsh = "0.10.3"

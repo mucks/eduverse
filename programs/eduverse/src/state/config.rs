@@ -1,7 +1,11 @@
-use anchor_lang::prelude::*;
+crate::prelude!();
 
 #[account]
-#[derive(Default)]
+#[cfg_attr(
+    all(not(feature = "anchor"), feature = "wasm"),
+    derive(borsh::BorshSerialize, borsh::BorshDeserialize)
+)]
+#[derive(Default, Debug)]
 pub struct Config {
     /// Version
     pub version: u8,

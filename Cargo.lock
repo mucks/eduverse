@@ -716,6 +716,9 @@ name = "eduverse"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "borsh 0.10.3",
+ "mock-anchor",
+ "solana-program",
 ]
 
 [[package]]
@@ -978,6 +981,10 @@ checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "mock-anchor"
+version = "0.1.0"
 
 [[package]]
 name = "num-bigint"
