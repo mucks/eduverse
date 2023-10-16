@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
+crate::use_anchor_encoding!();
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, Eq, PartialEq, Debug, Copy)]
+#[derive(Clone, Default, Eq, PartialEq, Debug, Copy, AnchorSerialize, AnchorDeserialize)]
 pub struct ScheduleItem {
     pub teacher_id: u32,
     pub lesson_id: u32,

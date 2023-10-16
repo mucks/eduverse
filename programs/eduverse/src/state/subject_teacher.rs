@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+crate::prelude!();
 
 #[account]
 #[derive(Default)]

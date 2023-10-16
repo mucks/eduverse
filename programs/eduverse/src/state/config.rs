@@ -1,7 +1,6 @@
-use anchor_lang::prelude::*;
+crate::prelude!();
 
 #[account]
-#[derive(Default)]
 pub struct Config {
     /// Version
     pub version: u8,

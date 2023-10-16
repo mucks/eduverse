@@ -179,6 +179,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "anchor-wasm"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -716,6 +724,9 @@ name = "eduverse"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "anchor-wasm",
+ "borsh 0.10.3",
+ "solana-program",
 ]
 
 [[package]]

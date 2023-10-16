@@ -9,11 +9,22 @@ crate-type = ["cdylib", "lib"]
 name = "eduverse"
 
 [features]
+anchor = ["anchor-lang"]
+wasm = ["solana-program", "anchor-wasm", "borsh"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 cpi = ["no-entrypoint"]
-default = []
+default = ["anchor"]
 
 [dependencies]
-anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
+
+# anchor
+anchor-lang = { version = "0.28.0", features = [
+    "init-if-needed",
+], optional = true }
+
+# wasm
+solana-program = { version = "1.16", optional = true }
+anchor-wasm = { path = "../../anchor-wasm", optional = true }
+borsh = { version = "0.10.3", optional = true }               # keep this in line with solana-program
