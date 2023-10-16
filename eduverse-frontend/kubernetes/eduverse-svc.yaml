@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eduverse
+  namespace: eduverse
+spec:
+  selector:
+    app: eduverse
+  ports:
+    - port: 80
+      targetPort: 80

@@ -1,6 +1,8 @@
-# Default ignored files
-/.anchor
-/.idea
+/eduverse-frontend/dist
 /target
-/node_modules
-/yarn.lock
+
+node_modules
+.anchor
+yarn.lock
+.vscode
+.idea
