@@ -14,7 +14,7 @@ macro_rules! prelude {
         use anchor_lang::prelude::*;
 
         #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
-        use mock_anchor::*;
+        use anchor_wasm::wasm_account as account;
 
         #[cfg(all(not(feature = "anchor"), feature = "wasm"))]
         #[allow(unused_imports)]
@@ -40,7 +40,7 @@ pub(crate) use use_anchor_encoding;
 use crate::instructions::*;
 
 #[cfg(feature = "anchor")]
-declare_id!("9PNbQAcpfxq3TH5Jsbncjw33RPSAKFhCW7UQ3ohzbuXq");
+declare_id!("9a2Vygp3V4Y249rpGFJhcxzzvaj8RtWoVGEVYGwLyfQG");
 
 #[cfg(feature = "anchor")]
 #[program]

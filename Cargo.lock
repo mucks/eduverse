@@ -179,6 +179,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "anchor-wasm"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -716,8 +724,8 @@ name = "eduverse"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "anchor-wasm",
  "borsh 0.10.3",
- "mock-anchor",
  "solana-program",
 ]
 
@@ -981,10 +989,6 @@ checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "mock-anchor"
-version = "0.1.0"
 
 [[package]]
 name = "num-bigint"

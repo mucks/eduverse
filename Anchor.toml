@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-eduverse = "9PNbQAcpfxq3TH5Jsbncjw33RPSAKFhCW7UQ3ohzbuXq"
+eduverse = "9a2Vygp3V4Y249rpGFJhcxzzvaj8RtWoVGEVYGwLyfQG"
 
 [registry]
 url = "https://api.apr.dev"

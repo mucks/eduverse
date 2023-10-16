@@ -28,6 +28,8 @@ describe("eduverse", () => {
 
   const program = anchor.workspace.Eduverse as Program<Eduverse>;
 
+  console.log(program.methods.initialize.toString());
+
 
   const SUBJECT_ONE: number = 42;
   const SUBJECT_TWO: number = 1337;

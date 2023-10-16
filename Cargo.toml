@@ -1,5 +1,5 @@
 [workspace]
-members = ["programs/*", "mock-anchor"]
+members = ["programs/*", "anchor-wasm"]
 
 resolver = "2"
 
