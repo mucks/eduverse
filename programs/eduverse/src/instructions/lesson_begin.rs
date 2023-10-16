@@ -1,7 +1,7 @@
 use crate::errors;
-use crate::state::{Lesson, ProfileById, Student, Teacher};
-use crate::utils::LessonState;
 use anchor_lang::prelude::*;
+use eduverse_types::enums::LessonState;
+use eduverse_types::state::{Lesson, ProfileById, Student, Teacher};
 
 #[event]
 pub struct LessonBegins {

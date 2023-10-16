@@ -1,7 +1,8 @@
-use crate::utils::LessonState;
+use crate::enums::LessonState;
+#[cfg(feature = "anchor_contract")]
 use anchor_lang::prelude::*;
 
-#[account]
+#[cfg_attr(feature = "anchor_contract", account)]
 #[derive(Default)]
 pub struct Lesson {
     /// Version

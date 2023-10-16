@@ -17,3 +17,6 @@ default = []
 
 [dependencies]
 anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
+eduverse-types = { path = "../../eduverse-types", features = [
+    "anchor_contract",
+] }

@@ -1,6 +1,8 @@
+#[cfg(feature = "anchor_contract")]
 use anchor_lang::prelude::*;
+use solana_program::pubkey::Pubkey;
 
-#[account]
+#[cfg_attr(feature = "anchor_contract", account)]
 pub struct Teacher {
     /// Version
     pub version: u8,

@@ -1,6 +1,6 @@
 use crate::errors;
 use anchor_lang::prelude::*;
-use crate::state::{ProfileById, Review, ReviewById, Student, Teacher};
+use eduverse_types::state::{ProfileById, Review, ReviewById, Student, Teacher};
 
 #[event]
 pub struct TeacherReviewCreated {
@@ -62,14 +62,20 @@ pub struct CreateReviewTeacher<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<CreateReviewTeacher>, teacher_id: u32, student_id: u32, stars: u8, text: String) -> Result<()> {
+pub fn handler(
+    ctx: Context<CreateReviewTeacher>,
+    teacher_id: u32,
+    student_id: u32,
+    stars: u8,
+    text: String,
+) -> Result<()> {
     let teacher_profile = &mut ctx.accounts.teacher_profile;
     let student_profile = &mut ctx.accounts.student_profile;
 
     // Make sure the student can review this teacher
     if !student_profile.reviewable_teacher_remove(teacher_id) {
-        return Err(errors::ErrorCode::LessonNotFunded.into());//TODO add some error
-    }//TODO: currently review PDA would be initializeable only once - figure logic for how many reviews 1 student can give 1 teacher etc
+        return Err(errors::ErrorCode::LessonNotFunded.into()); //TODO add some error
+    } //TODO: currently review PDA would be initializeable only once - figure logic for how many reviews 1 student can give 1 teacher etc
 
     // Store data for the review
     let review = &mut ctx.accounts.review;

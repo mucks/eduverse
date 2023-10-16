@@ -1,7 +1,9 @@
-use crate::utils::ScheduleItem;
+use crate::structs::ScheduleItem;
+#[cfg(feature = "anchor_contract")]
 use anchor_lang::prelude::*;
+use solana_program::pubkey::Pubkey;
 
-#[account]
+#[cfg_attr(feature = "anchor_contract", account)]
 pub struct Student {
     /// Version
     pub version: u8,

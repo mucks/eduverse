@@ -1,0 +1,11 @@
+[package]
+name = "eduverse-types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anchor-lang = { workspace = true, optional = true }
+solana-program = "1.16"
+
+[features]
+anchor_contract = ["anchor-lang"]

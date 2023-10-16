@@ -1,6 +1,6 @@
 use crate::errors;
-use crate::state::{Config, ProfileById, Teacher};
 use anchor_lang::prelude::*;
+use eduverse_types::state::{Config, ProfileById, Teacher};
 
 #[event]
 pub struct TeacherCreated {

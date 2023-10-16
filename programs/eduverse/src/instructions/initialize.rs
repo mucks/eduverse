@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Config;
+use eduverse_types::state::Config;
 
 #[derive(Accounts)]
 #[instruction()]

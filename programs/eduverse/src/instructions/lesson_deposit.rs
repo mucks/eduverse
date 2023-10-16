@@ -1,8 +1,8 @@
 use crate::errors;
-use crate::state::{Lesson, ProfileById, Student, Teacher};
-use crate::utils::LessonState;
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::system_instruction;
+use eduverse_types::enums::LessonState;
+use eduverse_types::state::{Lesson, ProfileById, Student, Teacher};
 
 #[event]
 pub struct LessonFundsDeposited {

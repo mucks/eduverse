@@ -2,8 +2,6 @@ use anchor_lang::prelude::*;
 
 mod errors;
 mod instructions;
-mod state;
-mod utils;
 
 use crate::instructions::*;
 

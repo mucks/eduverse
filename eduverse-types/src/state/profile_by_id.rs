@@ -1,6 +1,8 @@
+#[cfg(feature = "anchor_contract")]
 use anchor_lang::prelude::*;
+use solana_program::pubkey::Pubkey;
 
-#[account]
+#[cfg_attr(feature = "anchor_contract", account)]
 #[derive(Default)]
 pub struct ProfileById {
     /// Profile key

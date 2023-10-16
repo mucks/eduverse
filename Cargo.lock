@@ -716,6 +716,15 @@ name = "eduverse"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "eduverse-types",
+]
+
+[[package]]
+name = "eduverse-types"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "solana-program",
 ]
 
 [[package]]

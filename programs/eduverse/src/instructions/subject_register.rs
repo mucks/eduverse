@@ -1,6 +1,6 @@
 use crate::errors;
-use crate::state::{SubjectConfig, SubjectTeacher, Teacher};
 use anchor_lang::prelude::*;
+use eduverse_types::state::{SubjectConfig, SubjectTeacher, Teacher};
 
 #[event]
 pub struct SubjectRegistered {
