@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eduverse
+  namespace: eduverse
+  labels:
+    app: eduverse
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eduverse
+  template:
+    metadata:
+      labels:
+        app: eduverse
+    spec:
+      containers:
+        - name: eduverse
+          image: ghcr.io/mucks/eduverse-frontend-rs:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
