@@ -213,6 +213,7 @@ lazy_static::lazy_static! {
 pub static ref TEST_KEYPAIR: Keypair = get_local_keypair().expect("could not get local keypair");
 }
 
+#[cfg(test)]
 fn get_local_keypair() -> Result<Keypair> {
     let keypair_str = include_str!("/home/mucks/.config/solana/id.json");
     let keypair_bytes: Vec<u8> = serde_json::from_str(keypair_str)?;
