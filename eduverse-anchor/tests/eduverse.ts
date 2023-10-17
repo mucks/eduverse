@@ -26,7 +26,7 @@ describe("eduverse-contract", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.Eduverse as Program<EduverseContract>;
+  const program = anchor.workspace.EduverseContract as Program<EduverseContract>;
 
 
   const SUBJECT_ONE: number = 42;
