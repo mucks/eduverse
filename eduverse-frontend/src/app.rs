@@ -18,13 +18,13 @@ pub fn app() -> Html {
     let wallet = use_memo((), |_| WalletContext::new());
 
     html! {
-        <BrowserRouter>
         <ContextProvider<Rc<WalletContext>> context={wallet}>
-            <Navbar />
-            <main>
-                <Switch<Route> render={router::switch} />
-            </main>
+            <BrowserRouter>
+                <Navbar />
+                <main>
+                    <Switch<Route> render={router::switch} />
+                </main>
+            </BrowserRouter>
         </ContextProvider<Rc<WalletContext>>>
-        </BrowserRouter>
     }
 }

@@ -52,7 +52,7 @@ impl EduverseInstruction {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, BorshSerialize)]
+#[derive(Debug, Serialize, Deserialize, BorshSerialize, Default, Clone)]
 pub struct CreateTeacherInstruction {
     pub title: String,
     pub website: String,
@@ -164,7 +164,7 @@ impl ContractClient {
 
     pub async fn build_create_teacher_tx(
         &self,
-        instr: EduverseInstruction,
+        instr: CreateTeacherInstruction,
         payer: &Pubkey,
     ) -> Result<Transaction> {
         let conf = self.get_config().await?;
@@ -189,7 +189,7 @@ impl ContractClient {
             AccountMeta::new(*SYSTEM_PROGRAM_ID, false),
         ];
 
-        let tx = self.create_tx(payer, instr, accounts)?;
+        let tx = self.create_tx(payer, EduverseInstruction::CreateTeacher(instr), accounts)?;
         Ok(tx)
     }
 
@@ -298,10 +298,7 @@ mod tests {
         };
 
         let unsigned_tx = client
-            .build_create_teacher_tx(
-                EduverseInstruction::CreateTeacher(instr),
-                &TEST_KEYPAIR.pubkey(),
-            )
+            .build_create_teacher_tx(instr, &TEST_KEYPAIR.pubkey())
             .await?;
         let tx = client.inner.sign_tx(unsigned_tx, &TEST_KEYPAIR).await?;
 

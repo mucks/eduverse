@@ -1,14 +1,11 @@
 use std::{cell::RefCell, str::FromStr};
 
 use anyhow::{anyhow, Context, Result};
-use gloo_utils::format::JsValueSerdeExt;
 use log::debug;
-use solana_sdk::{pubkey::Pubkey, wasm_bindgen};
+use solana_sdk::{pubkey::Pubkey, transaction::Transaction, wasm_bindgen};
 use wasm_bindgen::JsValue;
 
-use crate::{
-    solana::rpc_client::test_transfer_tx, solana::rpc_client::SolanaRpcClient, util::LocalStorage,
-};
+use crate::util::LocalStorage;
 
 #[wasm_bindgen(module = "/js/phantom.js")]
 extern "C" {
@@ -102,36 +99,28 @@ impl WalletContext {
         Ok(pubkey)
     }
 
-    pub fn sign_and_send_transcation(pubkey_str: &str) -> Result<()> {
-        let pubkey = Pubkey::from_str(pubkey_str)?;
-        let mut tx = test_transfer_tx(pubkey)?;
-
+    pub async fn sign_and_send_transaction(&self, tx: Transaction) -> Result<()> {
         let solana = web_sys::window()
             .context("could not get window")?
             .get("solana")
             .context("could not get solana")?;
         let sign_tx_str = wasm_bindgen::JsValue::from_str("signAndSendTransaction");
-        let sign_tx_method: js_sys::Function = reflect_get(&*solana, &sign_tx_str).unwrap().into();
+        let sign_tx_method: js_sys::Function = reflect_get(&*solana, &sign_tx_str)?.into();
 
-        wasm_bindgen_futures::spawn_local(async move {
-            let hash = SolanaRpcClient::devnet()
-                .get_latest_blockhash()
-                .await
-                .unwrap();
+        let tx_bytes = bincode::serialize(&tx)?;
 
-            tx.message.recent_blockhash = hash;
+        let tx_js = tx_from_buffer(&tx_bytes);
 
-            let tx_bytes = bincode::serialize(&tx).unwrap();
+        let resp = sign_tx_method
+            .call1(&solana, &tx_js)
+            .map_err(|err| anyhow!("error signing and sending transaction: {:?}", err))?;
 
-            let tx_js = tx_from_buffer(&tx_bytes);
+        let promise = js_sys::Promise::resolve(&resp);
+        let result = wasm_bindgen_futures::JsFuture::from(promise)
+            .await
+            .map_err(|err| anyhow!("error signing and sending transaction: {:?}", err))?;
 
-            let resp = sign_tx_method.call1(&solana, &tx_js).unwrap();
-
-            let promise = js_sys::Promise::resolve(&resp);
-            let result = wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
-
-            log::debug!("result: {:?}", result);
-        });
+        log::debug!("result: {:?}", result);
 
         Ok(())
     }
