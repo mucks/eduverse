@@ -64,7 +64,11 @@ pub fn handler(
     let total_fee = lesson.fee_total;
 
     //TODO should anyone other than the student be able to fund their lesson?
-    //TODO do we accept SPL tokens such as USDC?
+
+    // Check for token transfers
+    if lesson.token_address != None {
+        //TODO handle SPL tokens such as BONK & USDC & EURe
+    }
 
     // Transfer the funds if necessary
     if total_fee > 0 {

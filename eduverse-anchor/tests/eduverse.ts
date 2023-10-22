@@ -135,6 +135,6 @@ describe("eduverse-contract", () => {
 
     const balanceAfter = await program.provider.connection.getBalance(accAlice.publicKey);
 
-    expect(balanceAfter).to.be.equal(balanceBefore + 1_000_000_000 + 4_008_960);
+    expect(balanceAfter).to.be.equal(balanceBefore + 1_000_000_000 + 4_231_680);
   });
 });
