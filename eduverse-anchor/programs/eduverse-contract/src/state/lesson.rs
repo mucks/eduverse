@@ -28,6 +28,9 @@ pub struct Lesson {
     /// Length of lesson in minutes
     pub duration: u16,
 
+    /// Public key of a SPL token mint or None for SOL
+    pub token_address: Option<Pubkey>,
+
     /// Total price for the lesson
     pub fee_total: u64,
 
