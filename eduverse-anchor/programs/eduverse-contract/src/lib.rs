@@ -40,7 +40,7 @@ pub(crate) use use_anchor_encoding;
 use crate::instructions::*;
 
 #[cfg(feature = "anchor")]
-declare_id!("AAjiVuYVZBK4mnFHEUUe1c9u7UUUsQcXgFPnLAJz4Kc7");
+declare_id!("DMk4dLgAZvP84jxzgZZgS1R5WXGMi4wXHdj7cdi3sKuR");
 
 #[cfg(feature = "anchor")]
 #[program]

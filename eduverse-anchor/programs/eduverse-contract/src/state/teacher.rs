@@ -1,7 +1,7 @@
 crate::prelude!();
 
 #[account]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Teacher {
     /// Version
     pub version: u8,

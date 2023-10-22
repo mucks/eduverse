@@ -224,7 +224,7 @@ fn get_local_keypair() -> Result<Keypair> {
 mod tests {
     use solana_sdk::{pubkey::Pubkey, signer::Signer};
 
-    use crate::solana::contract_client::PROGRAM_ID;
+    use crate::{solana::contract_client::PROGRAM_ID, types::Subject};
 
     use super::*;
     use wasm_bindgen_test::*;

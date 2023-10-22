@@ -6,8 +6,8 @@ use web_sys::{EventTarget, HtmlInputElement};
 use yew::prelude::*;
 
 use crate::{
-    app::contexts::wallet_context::WalletContext,
-    solana::contract_client::{ContractClient, CreateTeacherInstruction},
+    app::contexts::wallet_context::WalletContext, solana::contract_client::ContractClient,
+    types::CreateTeacherInstruction,
 };
 
 async fn create_teacher(

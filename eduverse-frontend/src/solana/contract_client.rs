@@ -1,11 +1,13 @@
 use std::str::FromStr;
 
+use crate::types::CreateTeacherInstruction;
+
 use super::rpc_client::SolanaRpcClient;
 use anyhow::{Context, Result};
+use borsh::{to_vec, BorshDeserialize};
 use eduverse_contract::state::{Config, Teacher};
-use serde::{Deserialize, Serialize};
+use num_traits::ToBytes;
 use solana_sdk::{
-    account::Account,
     instruction::{AccountMeta, Instruction},
     message::Message,
     pubkey::Pubkey,
@@ -13,7 +15,7 @@ use solana_sdk::{
 };
 
 lazy_static::lazy_static! {
-    pub static ref PROGRAM_ID: Pubkey = Pubkey::from_str("AAjiVuYVZBK4mnFHEUUe1c9u7UUUsQcXgFPnLAJz4Kc7").expect("invalid PROGRAM_ID");
+    pub static ref PROGRAM_ID: Pubkey = Pubkey::from_str("DMk4dLgAZvP84jxzgZZgS1R5WXGMi4wXHdj7cdi3sKuR").expect("invalid PROGRAM_ID");
     pub static ref SYSTEM_PROGRAM_ID: Pubkey = Pubkey::from_str("11111111111111111111111111111111").expect("invalid SYSTEM_PROGRAM_ID");
     pub static ref SYS_VAR_RENT: Pubkey = Pubkey::from_str("SysvarRent111111111111111111111111111111111").expect("invalid SYS_VAR_RENT");
 }
@@ -26,6 +28,7 @@ pub struct ContractClient {
 pub enum EduverseInstruction {
     Initialize,
     CreateTeacher(CreateTeacherInstruction),
+    RegisterSubject(u32),
 }
 
 impl EduverseInstruction {
@@ -33,6 +36,7 @@ impl EduverseInstruction {
         match self {
             EduverseInstruction::Initialize => sighash("initialize"),
             EduverseInstruction::CreateTeacher(_) => sighash("create_teacher_profile"),
+            EduverseInstruction::RegisterSubject(_) => sighash("teacher_register_subject"),
         }
     }
 
@@ -41,6 +45,7 @@ impl EduverseInstruction {
 
         let args = match self {
             EduverseInstruction::CreateTeacher(teacher) => to_vec(&teacher)?,
+            EduverseInstruction::RegisterSubject(subject_id) => subject_id.to_le_bytes().to_vec(),
             _ => vec![],
         };
 
@@ -51,16 +56,6 @@ impl EduverseInstruction {
         Ok(bytes)
     }
 }
-
-#[derive(Debug, Serialize, Deserialize, BorshSerialize, Default, Clone)]
-pub struct CreateTeacherInstruction {
-    pub title: String,
-    pub website: String,
-    pub telegram: String,
-    pub twitter: String,
-}
-
-use borsh::{to_vec, BorshDeserialize, BorshSerialize};
 
 impl ContractClient {
     pub fn new(inner: SolanaRpcClient) -> Self {
@@ -158,8 +153,50 @@ impl ContractClient {
         self.get_account_by_pda::<Config>(&config_pda).await
     }
 
+    pub async fn get_teacher_by_pubkey(&self, pubkey: &Pubkey) -> Result<Teacher> {
+        let (teacher_pda, _) = derive_program_address_str("teacher", &Some(*pubkey))?;
+
+        self.get_account_by_pda::<Teacher>(&teacher_pda).await
+    }
+
     pub async fn get_teachers(&self) -> Result<Vec<Teacher>> {
         self.get_accounts_by_struct_name::<Teacher>("Teacher").await
+    }
+
+    pub async fn register_subject(&self, payer: &Pubkey, subject_id: u32) -> Result<Transaction> {
+        let (teacher_pda, _) = derive_program_address_str("teacher", &Some(*payer))?;
+        let (subject_config_pda, _) = derive_program_address(
+            &[
+                b"subject_config" as &[u8],
+                &subject_id.to_le_bytes() as &[u8],
+            ],
+            &None,
+        )?;
+
+        let (subject_teacher_pda, _) = derive_program_address(
+            &[
+                b"subject_teacher" as &[u8],
+                &subject_id.to_le_bytes() as &[u8],
+                // TODO: query subject_config and get the count_teachers if subject_config exists
+                &0u32.to_le_bytes() as &[u8],
+            ],
+            &None,
+        )?;
+
+        let accounts = vec![
+            AccountMeta::new(*payer, true),
+            AccountMeta::new(teacher_pda, false),
+            AccountMeta::new(subject_config_pda, false),
+            AccountMeta::new(subject_teacher_pda, false),
+            AccountMeta::new(*SYS_VAR_RENT, false),
+            AccountMeta::new(*SYSTEM_PROGRAM_ID, false),
+        ];
+        let tx = self.create_tx(
+            payer,
+            EduverseInstruction::RegisterSubject(subject_id),
+            accounts,
+        )?;
+        Ok(tx)
     }
 
     pub async fn build_create_teacher_tx(
@@ -193,6 +230,7 @@ impl ContractClient {
         Ok(tx)
     }
 
+    #[cfg(test)]
     pub async fn send_tx(&self, tx: Transaction) -> Result<String> {
         self.inner.send_transaction(&tx).await
     }
@@ -237,7 +275,7 @@ pub fn account_sighash(name: &str) -> [u8; 8] {
 
 #[cfg(test)]
 mod tests {
-    use crate::solana::rpc_client::TEST_KEYPAIR;
+    use crate::{solana::rpc_client::TEST_KEYPAIR, types::Subject};
 
     use super::*;
     use solana_sdk::signer::Signer;
@@ -305,6 +343,39 @@ mod tests {
         let tx_hash = client.send_tx(tx).await?;
 
         log::debug!("\n\ntx_hash: {:?}\n\n", tx_hash);
+        Ok(())
+    }
+
+    #[wasm_bindgen_test]
+    async fn test_register_subject() -> Result<()> {
+        wasm_logger::init(wasm_logger::Config::default());
+
+        let client = ContractClient::local();
+
+        let pk = TEST_KEYPAIR.pubkey();
+
+        let mut tx = client
+            .register_subject(&pk, Subject::English as u32)
+            .await?;
+
+        tx.message.recent_blockhash = client.inner.get_latest_blockhash().await?;
+
+        let tx = client.inner.sign_tx(tx, &TEST_KEYPAIR).await?;
+
+        client.send_tx(tx).await?;
+
+        Ok(())
+    }
+
+    #[wasm_bindgen_test]
+    async fn get_get_teachers() -> Result<()> {
+        wasm_logger::init(wasm_logger::Config::default());
+
+        let client = ContractClient::local();
+        let teachers = client.get_teachers().await?;
+
+        log::debug!("{:?}", teachers);
+
         Ok(())
     }
 }
